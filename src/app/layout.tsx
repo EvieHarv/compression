@@ -1,8 +1,13 @@
 import GlobalStyles from "@/lib/GlobalStyles";
 import StyledComponentsRegistry from "@/lib/registry";
-import { Inter } from "next/font/google";
+import { Roboto_Mono } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Roboto_Mono({ subsets: ["latin"] });
+
+// Mafs imports
+import "mafs/core.css";
+import "mafs/font.css";
+import MafsStyle from "@/lib/MafsStyle";
 
 export default function RootLayout({
   children,
@@ -14,6 +19,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <StyledComponentsRegistry>
           <GlobalStyles />
+          <MafsStyle />
           {children}
         </StyledComponentsRegistry>
       </body>

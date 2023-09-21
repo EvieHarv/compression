@@ -2,26 +2,24 @@
 
 import StandardPageWrapper from "@/components/StandardPageWrapper";
 import { Heading } from "@/components/StyledSmalls";
-import { Mafs, Text, Polygon } from "mafs";
+import TextBreakdown from "@/components/mafs/AsciiBreakdown";
+import { useState } from "react";
 
 export default function Playground() {
+  const [text, updateText] = useState("");
+
   return (
     <StandardPageWrapper>
       <Heading>~ ✨ Dev Area ✨ ~</Heading>
       <hr />
-      <Mafs pan={false} viewBox={{ x: [-5, 5], y: [-5, 5] }}>
-        <Text x={0} y={0}>
-          This is some text
-        </Text>
-        <Polygon
-          points={[
-            [-5, -5],
-            [5, -5],
-            [5, 5],
-            [-5, 5],
-          ]}
-        />
-      </Mafs>
+      put text here: (maxlen 60)
+      <input
+        type="text"
+        value={text}
+        maxLength={60}
+        onChange={(e) => updateText(e.target.value)}
+      ></input>
+      <TextBreakdown input={text} />
     </StandardPageWrapper>
   );
 }

@@ -2,11 +2,11 @@ import { FONT_SIZE, SPACINGS } from "@/lib/constants";
 import { ReactNode } from "react";
 import styled from "styled-components";
 
-interface TextBoxProps {
+interface Props {
   children?: ReactNode;
 }
 
-export default function QuoteBox({ children }: TextBoxProps) {
+export default function QuoteBox({ children }: Props) {
   return (
     <CenterWrap>
       <Box>{children}</Box>

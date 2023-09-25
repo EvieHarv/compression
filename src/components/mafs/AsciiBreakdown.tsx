@@ -1,27 +1,28 @@
 import { BREAKPOINTS, COLORS } from "@/lib/constants";
 import StringToASCII from "@/lib/encodings/ascii";
 import { useWindowWidth } from "@react-hook/window-size";
-import { Coordinates, Mafs, Polygon, Text, Transform, vec } from "mafs";
+import { Coordinates, Mafs, Polygon, Text, Transform, vec, Vector } from "mafs";
 import styled from "styled-components";
 
 interface Props {
   input: string;
 }
 
-const MAX_CHAR_IN_LINE_DESKTOP = 12; // Max character boxes in a single line
-const MAX_CHAR_IN_LINE_TABLET = 6; // Max character boxes in a single line
-const MAX_CHAR_IN_LINE_MOBILE = 4; // Max character boxes in a single line
-const SIZE_VIEW_MIN_CHARS = 4; // Minimum initalized size
-const GAP_HORIZ = 0.6; // Horizontal gap between character boxes
-const GAP_VERT = 0.6; // Vertical gap between lines
-const GAP_BELOW = 0.25; // Gap between the bottom of the box and the binary
-const SIZE_BOX = 1; // Size of the box's sides.
-
-// Possibly calculate-on-the-fly?
-const SIZE_TEXT_MAIN = 30; // Size of the char in the box
-const SIZE_TEXT_BELOW = 15; // Size of the text below the box
-
 export default function AsciiBreakdown({ input }: Props) {
+  const MAX_CHAR_IN_LINE_DESKTOP = 12; // Max character boxes in a single line
+  const MAX_CHAR_IN_LINE_TABLET = 6; // Max character boxes in a single line
+  const MAX_CHAR_IN_LINE_MOBILE = 4; // Max character boxes in a single line
+  const SIZE_VIEW_MIN_CHARS = 4; // Minimum initalized size
+  const GAP_HORIZ = 0.6; // Horizontal gap between character boxes
+  const GAP_VERT = 0.6; // Vertical gap between lines
+  const GAP_BELOW = 0.25; // Gap between the bottom of the box and the binary
+  const SIZE_BOX = 1; // Size of the box's sides.
+  const MAGIC_PIXEL_SCALE = 49; // APPROXIMATE size of 1 unit in actual-pixels. Used for height of container.
+
+  // Possibly calculate-on-the-fly?
+  const SIZE_TEXT_MAIN = 30; // Size of the char in the box
+  const SIZE_TEXT_BELOW = 15; // Size of the text below the box
+
   const screenWidth = useWindowWidth();
   let MAX_CHAR_IN_LINE = MAX_CHAR_IN_LINE_DESKTOP;
   if (screenWidth <= BREAKPOINTS.phone) {
@@ -78,26 +79,37 @@ export default function AsciiBreakdown({ input }: Props) {
     );
   };
 
-  // Find the horizontal size needed.
-  // The logic is a bit involved but I'll attempt to annotate.
+  // Find the horizontal size needed, in "mafs units."
+  // Takes the max between "smallest wanted line size" and "current or largest wanted line size"
+  // Basically, will grow from MIN_CHARS to MAX_CHARS horizontally, adjusting along the way.
   const viewSizeX = Math.max(
-    SIZE_VIEW_MIN_CHARS * GAP_HORIZ +
-      SIZE_VIEW_MIN_CHARS * SIZE_BOX -
-      GAP_HORIZ,
-    Math.min(MAX_CHAR_IN_LINE, input.length) * GAP_HORIZ +
-      Math.min(MAX_CHAR_IN_LINE, input.length) * SIZE_BOX -
+    SIZE_VIEW_MIN_CHARS * (GAP_HORIZ + SIZE_BOX) - GAP_HORIZ,
+    Math.min(MAX_CHAR_IN_LINE, input.length) * (GAP_HORIZ + SIZE_BOX) -
       GAP_HORIZ,
   );
 
-  // const viewSizeY =
-  //   -1 * Math.max(SIZE_VIEW_MIN_CHARS, input.length % MAX_CHAR_IN_LINE);
+  // Find the vertical size needed, in "mafs units."
+  // Takes the larger between "smallest wanted size" and "current or largest wanted size"
+  const viewSizeY =
+    -1 *
+    Math.max(
+      1 * (GAP_VERT + SIZE_BOX) - GAP_VERT,
+      // We use ceil because we're doing a count
+      Math.ceil(input.length / MAX_CHAR_IN_LINE) * (GAP_VERT + SIZE_BOX) -
+        GAP_VERT,
+    );
 
   return (
     <Container>
-      <Mafs pan={false} viewBox={{ x: [0, viewSizeX], y: [-5.5, 0] }}>
+      <Mafs
+        pan={false}
+        viewBox={{ x: [0, viewSizeX], y: [viewSizeY, 0] }}
+        height={(-1 * viewSizeY + 1) * MAGIC_PIXEL_SCALE}
+      >
         {/* <Coordinates.Cartesian /> */}
+        {/* <Vector tail={[0, 0]} tip={[viewSizeX, viewSizeY]} /> */}
         {input.split("").map((c, i) => {
-          const row = Math.floor(i / MAX_CHAR_IN_LINE);
+          const row = Math.floor(i / MAX_CHAR_IN_LINE); // We use floor because we're 0 indexed
           const column = i % MAX_CHAR_IN_LINE;
           return MakeBox(row, column, c);
         })}

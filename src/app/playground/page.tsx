@@ -12,11 +12,10 @@ export default function Playground() {
     <StandardPageWrapper>
       <Heading>~ ✨ Dev Area ✨ ~</Heading>
       <hr />
-      put text here: (maxlen 60)
+      put text here:
       <input
         type="text"
         value={text}
-        maxLength={60}
         onChange={(e) => updateText(e.target.value)}
       ></input>
       <TextBreakdown input={text} />

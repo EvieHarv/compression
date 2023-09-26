@@ -17,7 +17,7 @@ export default function AsciiBreakdown({ input }: Props) {
   const GAP_VERT = 0.6; // Vertical gap between lines
   const GAP_BELOW = 0.25; // Gap between the bottom of the box and the binary
   const SIZE_BOX = 1; // Size of the box's sides.
-  const MAGIC_PIXEL_SCALE = 49; // APPROXIMATE size of 1 unit in actual-pixels. Used for height of container.
+  const MAGIC_PIXEL_SCALE = 46; // APPROXIMATE size of 1 unit in actual-pixels. Used for height of container.
 
   // Possibly calculate-on-the-fly?
   const SIZE_TEXT_MAIN = 30; // Size of the char in the box

@@ -3,10 +3,15 @@
 import StandardPageWrapper from "@/components/StandardPageWrapper";
 import { Heading } from "@/components/StyledSmalls";
 import TextBreakdown from "@/components/mafs/AsciiBreakdown";
+import { HuffmanTree } from "@/lib/encodings/huffman";
 import { useState } from "react";
 
 export default function Playground() {
   const [text, updateText] = useState("");
+
+  const tree = new HuffmanTree();
+  tree.buildFromString("hello world!");
+  console.log(tree);
 
   return (
     <StandardPageWrapper>

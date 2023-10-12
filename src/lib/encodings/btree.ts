@@ -22,7 +22,7 @@ export abstract class TreeValue {
   abstract print(): string;
 
   /**
-   * Compares the current instance with another instance of the same type.
+   * Orders the current instance with another instance of the same type.
    *
    * The method should return "true" if the current instance is greater
    * than the provided instance. Otherwise, it should return "false."
@@ -32,10 +32,15 @@ export abstract class TreeValue {
    * ```ts
    * const v1 = new MyValue(5);
    * const v2 = new MyValue(4);
-   * v1.compare(v2); // Returns true because 5 > 4
+   * v1.order(v2); // Returns true because 5 > 4
    * ```
    */
-  abstract compare(other: this): boolean;
+  abstract order(other: this): boolean;
+
+  /**
+   * Determines "equivalency" for determining if a tree contains a value.
+   */
+  abstract equivalent(other: this): boolean;
 }
 
 type NodePtr<T extends TreeValue> = TreeNode<T> | null;
@@ -58,7 +63,7 @@ export class TreeNode<T extends TreeValue> {
 /**
  * A simple, bare-bones abstract interface for a binary tree.
  */
-export abstract class Tree<T extends TreeValue> {
+export abstract class BTree<T extends TreeValue> {
   // TODO: Sparse methods for now, only implementing the needed parts as they come up.
   root: TreeNode<T> | null = null;
 
@@ -66,6 +71,10 @@ export abstract class Tree<T extends TreeValue> {
     throw new Error("PENDING DEFAULT IMPLEMENTATION");
   }
 
+  /**
+   *
+   * @param value Value to search for.
+   */
   contains(value: T): void {
     throw new Error("PENDING DEFAULT IMPLEMENTATION");
   }

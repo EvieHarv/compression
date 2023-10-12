@@ -1,4 +1,4 @@
-import { Tree, TreeNode, TreeValue } from "./bintree";
+import { BTree, TreeNode, TreeValue } from "./btree";
 
 export class Huffman extends TreeValue {
   count: number = 0;
@@ -14,30 +14,43 @@ export class Huffman extends TreeValue {
   }
 
   print(): string {
-    return `${this.count}${this.char ? ` | ${this.char}` : ""}`;
+    return `${this.count}${this.char ? ` | "${this.char}"` : ""}`;
   }
-  compare(other: Huffman) {
+
+  order(other: Huffman) {
     return this.count > other.count;
+  }
+
+  equivalent(other: this): boolean {
+    return this.char === other.char;
   }
 }
 
 type frequencyMap = { [key: string]: number };
+type codeMap = { [key: string]: string };
 
 /**
- * A simple implementation of a Huffman tree. Extends Tree from bintree interface.
+ * A simple implementation of a Huffman tree. Extends `Tree` from bintree interface.
  *
- * Includes methods for building the tree, encoding a string, and decoding a string.
+ * Includes additional methods for building the tree, encoding a string, and decoding a string.
+ *
+ * Note that the encoding of the input will be returned by buildFromString(), but then
+ * you can encode any other string that uses the ***same characters*** via encode().
  *
  * Example usage:
  *
  * ```ts
  * const tree = new HuffmanTree();
- * tree.buildFromString("hello world!");
- * const encoded = tree.encode("Hello, World!");
- * console.log(tree.decode(encoded)); // Hello, World!
+ * const encoded = tree.buildFromString("hello world!");
+ * const encoded_again = tree.encode("wow!!!!!"); // Not optimized!
+ * console.log(tree.decode(encoded)); // hello world!
+ * console.log(tree.decode(encoded_again)); // wow!!!!!
  * ```
  */
-export class HuffmanTree extends Tree<Huffman> {
+export class HuffmanTree extends BTree<Huffman> {
+  // Caches codes.
+  codes: codeMap = {};
+
   private buildFrequencyMap(input: string): frequencyMap {
     const map: frequencyMap = {};
     for (const char of input) {
@@ -47,7 +60,13 @@ export class HuffmanTree extends Tree<Huffman> {
     return map;
   }
 
-  buildFromString(input: string): void {
+  /**
+   * Optimizes the tree to the specific input.
+   *
+   * @param input: String to optimize the tree to.
+   * @returns Returns the encoding of the input string.
+   */
+  buildFromString(input: string): string {
     // Get the initial frequencies of the array.
     const freqMap = this.buildFrequencyMap(input);
 
@@ -81,14 +100,76 @@ export class HuffmanTree extends Tree<Huffman> {
       queue.push(newNode);
     }
 
+    // Append root, and cache the codes.
     this.root = queue[0];
+    this.generateCodes(this.root, "");
+
+    return this.encode(input);
   }
 
+  // Recursively generate codes, storing them in self.codes
+  private generateCodes(node: TreeNode<Huffman> | null, code: string): void {
+    if (!node) return;
+
+    if (node.value.char && node.value.char !== "") {
+      this.codes[node.value.char] = code;
+    }
+
+    // Recurse left
+    this.generateCodes(node.left, code + "0");
+    // Recurse right
+    this.generateCodes(node.right, code + "1");
+  }
+
+  /**
+   * Encodes a string using the current layout of the tree.
+   * If a character is requested to be encoded that does not
+   * exist in the tree, an error will be thrown.
+   *
+   * @param input String to encode.
+   * @returns A string-encoded binary sequence
+   */
   encode(input: string): string {
-    throw new Error("Method Not Implemented");
+    // Utilizing the cached value `this.codes`, trivially assign values.
+    // This is okay, as we assume that a tree is built before encoding,
+
+    let encoded = "";
+    for (const char of input) {
+      if (this.codes[char] == undefined)
+        throw new Error("Code not found, please rebuild tree!");
+      encoded += this.codes[char];
+    }
+    return encoded;
   }
 
+  /**
+   * Converts an encoded tree
+   * @param input A string-encoded binary sequence
+   * @returns Returns the decoded string.
+   */
   decode(input: string): string {
-    throw new Error("Method Not Implemented");
+    // Even though we could simply use the cached codes, it's more
+    // interesting/illustrative/fun to actually traverse the tree
+    // like how God intended 🙏.
+
+    let decoded = "";
+    let currentNode = this.root;
+
+    for (const bit of input) {
+      // Traverse left or right
+      if (bit == "0") {
+        currentNode = currentNode!.left;
+      } else {
+        currentNode = currentNode!.right;
+      }
+
+      // Char found! Append, and reset back to root.
+      if (currentNode!.value.char) {
+        decoded += currentNode!.value.char;
+        currentNode = this.root;
+      }
+    }
+
+    return decoded;
   }
 }

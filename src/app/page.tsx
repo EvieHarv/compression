@@ -23,7 +23,7 @@ export default function Home() {
           - <StyledLink href="/playground">dev playground</StyledLink>
         </li>
         <li>
-          - <StyledLink href="/playground">attributions</StyledLink>
+          - <StyledLink href="/attributions">attributions</StyledLink>
         </li>
       </ul>
     </StandardPageWrapper>

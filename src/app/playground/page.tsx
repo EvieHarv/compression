@@ -3,6 +3,7 @@
 import StandardPageWrapper from "@/components/StandardPageWrapper";
 import { Heading } from "@/components/StyledSmalls";
 import AsciiBreakdown from "@/components/mafs/AsciiBreakdown";
+import TreeVisualization from "@/components/mafs/TreeVisualization";
 import StringToASCII from "@/lib/encodings/ascii";
 import { HuffmanTree } from "@/lib/encodings/huffman";
 import { useState } from "react";
@@ -28,6 +29,9 @@ export default function Playground() {
         onChange={(e) => updateText(e.target.value)}
       ></input>
       <AsciiBreakdown input={text} />
+      <Heading>visual break</Heading>
+      <hr />
+      <TreeVisualization tree={tree} labelBranches={true} />
     </StandardPageWrapper>
   );
 }

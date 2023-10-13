@@ -1,9 +1,9 @@
 /**
- * Defines an abstract interface for binary trees.
+ * Defines an abstract interface for trees.
  *
- * Primarily useful for implementing abstract interfaces over
- * a binary tree of an unknown type, such as the binary tree
- * visualziation component.
+ * Primarily useful for implementing functions over
+ * a tree of an unknown type, such as the tree
+ * visualization component.
  */
 
 /**
@@ -43,38 +43,33 @@ export abstract class TreeValue {
   abstract equivalent(other: this): boolean;
 }
 
-type NodePtr<T extends TreeValue> = TreeNode<T> | null;
+// Syntactic sugar
+type NodePtr<T extends TreeValue> = TreeNode<T>;
 
 /**
- * An individual node in a binary tree, with values of a certain type.
+ * An individual node in a tree, with values of a certain type.
  */
 export class TreeNode<T extends TreeValue> {
   value: T;
-  left: NodePtr<T> = null;
-  right: NodePtr<T> = null;
+  children: NodePtr<T>[] = [];
 
-  constructor(value: T, left: NodePtr<T> = null, right: NodePtr<T> = null) {
+  constructor(value: T, children: NodePtr<T>[] | null = null) {
     this.value = value;
-    this.left = left;
-    this.right = right;
+    this.children = children ?? [];
   }
 }
 
 /**
- * A simple, bare-bones abstract interface for a binary tree.
+ * A simple, bare-bones abstract interface for a tree.
  */
-export abstract class BTree<T extends TreeValue> {
-  // TODO: Sparse methods for now, only implementing the needed parts as they come up.
+export abstract class Tree<T extends TreeValue> {
   root: TreeNode<T> | null = null;
 
+  // TODO: Sparse methods for now, only implementing the needed parts as they come up.
+  // For now, this class mainly serves as simply "something that can hold a root of TreeNode<T>"
   insert(value: T): void {
     throw new Error("PENDING DEFAULT IMPLEMENTATION");
   }
-
-  /**
-   *
-   * @param value Value to search for.
-   */
   contains(value: T): void {
     throw new Error("PENDING DEFAULT IMPLEMENTATION");
   }

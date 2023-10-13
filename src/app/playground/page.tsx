@@ -3,7 +3,6 @@
 import StandardPageWrapper from "@/components/StandardPageWrapper";
 import { Heading } from "@/components/StyledSmalls";
 import AsciiBreakdown from "@/components/mafs/AsciiBreakdown";
-import BTreeBreakdown from "@/components/mafs/BTreeBreakdown";
 import StringToASCII from "@/lib/encodings/ascii";
 import { HuffmanTree } from "@/lib/encodings/huffman";
 import { useState } from "react";
@@ -14,8 +13,9 @@ export default function Playground() {
   let ascii = StringToASCII(text);
 
   const tree = new HuffmanTree();
-  let encoded = tree.buildFromString("!");
+  let encoded = tree.buildFromString("hello world");
   console.log(tree);
+  console.log(tree.decode(encoded));
 
   return (
     <StandardPageWrapper>
@@ -28,7 +28,6 @@ export default function Playground() {
         onChange={(e) => updateText(e.target.value)}
       ></input>
       <AsciiBreakdown input={text} />
-      <BTreeBreakdown tree={tree}></BTreeBreakdown>
     </StandardPageWrapper>
   );
 }

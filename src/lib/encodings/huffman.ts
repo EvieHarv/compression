@@ -1,4 +1,4 @@
-import { BTree, TreeNode, TreeValue } from "./btree";
+import { Tree, TreeNode, TreeValue } from "./tree";
 
 export class Huffman extends TreeValue {
   count: number = 0;
@@ -17,7 +17,7 @@ export class Huffman extends TreeValue {
     return `${this.count}${this.char ? ` | "${this.char}"` : ""}`;
   }
 
-  order(other: Huffman) {
+  order(other: this) {
     return this.count > other.count;
   }
 
@@ -47,7 +47,7 @@ type codeMap = { [key: string]: string };
  * console.log(tree.decode(encoded_again)); // wow!!!!!
  * ```
  */
-export class HuffmanTree extends BTree<Huffman> {
+export class HuffmanTree extends Tree<Huffman> {
   // Caches codes.
   codes: codeMap = {};
 
@@ -64,7 +64,7 @@ export class HuffmanTree extends BTree<Huffman> {
    * Optimizes the tree to the specific input.
    *
    * @param input: String to optimize the tree to.
-   * @returns Returns the encoding of the input string.
+   * @returns The encoding of the input string.
    */
   buildFromString(input: string): string {
     // Get the initial frequencies of the array.
@@ -92,8 +92,7 @@ export class HuffmanTree extends BTree<Huffman> {
       // Create a new node
       const newNode = new TreeNode<Huffman>(
         new Huffman(left.value.count + right.value.count),
-        left,
-        right,
+        [left, right],
       );
 
       // Push the new internal node back into the queue
@@ -116,9 +115,9 @@ export class HuffmanTree extends BTree<Huffman> {
     }
 
     // Recurse left
-    this.generateCodes(node.left, code + "0");
+    this.generateCodes(node.children[0], code + "0");
     // Recurse right
-    this.generateCodes(node.right, code + "1");
+    this.generateCodes(node.children[1], code + "1");
   }
 
   /**
@@ -127,7 +126,7 @@ export class HuffmanTree extends BTree<Huffman> {
    * exist in the tree, an error will be thrown.
    *
    * @param input String to encode.
-   * @returns A string-encoded binary sequence
+   * @returns A string-encoded binary sequence.
    */
   encode(input: string): string {
     // Utilizing the cached value `this.codes`, trivially assign values.
@@ -143,9 +142,10 @@ export class HuffmanTree extends BTree<Huffman> {
   }
 
   /**
-   * Converts an encoded tree
-   * @param input A string-encoded binary sequence
-   * @returns Returns the decoded string.
+   * Converts an encoded bit string back into text.
+   *
+   * @param input A string-encoded binary sequence.
+   * @returns The decoded string.
    */
   decode(input: string): string {
     // Even though we could simply use the cached codes, it's more
@@ -158,9 +158,9 @@ export class HuffmanTree extends BTree<Huffman> {
     for (const bit of input) {
       // Traverse left or right
       if (bit == "0") {
-        currentNode = currentNode!.left;
+        currentNode = currentNode!.children[0];
       } else {
-        currentNode = currentNode!.right;
+        currentNode = currentNode!.children[1];
       }
 
       // Char found! Append, and reset back to root.

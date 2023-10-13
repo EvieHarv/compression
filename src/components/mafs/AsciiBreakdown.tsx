@@ -42,7 +42,7 @@ export default function AsciiBreakdown({ input }: Props) {
       (row * SIZE_BOX + row * GAP_VERT) * -1,
     ];
 
-    console.log(Origin);
+    // console.log(Origin);
 
     return (
       <Transform key={row + "_" + column}>

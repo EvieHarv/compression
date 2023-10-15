@@ -59,6 +59,8 @@ export class TreeNode<T extends TreeValue> {
   }
 }
 
+type locationMap<T extends TreeValue> = [string, T];
+
 /**
  * A simple, bare-bones abstract interface for a tree.
  */
@@ -70,7 +72,45 @@ export abstract class Tree<T extends TreeValue> {
   insert(value: T): void {
     throw new Error("PENDING DEFAULT IMPLEMENTATION");
   }
+
   contains(value: T): void {
     throw new Error("PENDING DEFAULT IMPLEMENTATION");
+  }
+
+  asList(): T[] {
+    if (this.root) return this.recurseList(this.root);
+    return [];
+  }
+  private recurseList(node: TreeNode<T>): T[] {
+    let arr: T[] = [];
+
+    arr.push(node.value);
+
+    for (let i = 0; i < node.children.length; i++) {
+      arr = arr.concat(this.recurseList(node.children[i]));
+    }
+
+    return arr;
+  }
+
+  asLocationMap(): locationMap<T>[] {
+    if (this.root) return this.recurseLocationMap(this.root);
+    return [];
+  }
+  private recurseLocationMap(
+    node: TreeNode<T>,
+    location: string = "",
+  ): locationMap<T>[] {
+    let arr: locationMap<T>[] = [];
+
+    arr.push([location, node.value]);
+
+    for (let i = 0; i < node.children.length; i++) {
+      arr = arr.concat(
+        this.recurseLocationMap(node.children[i], location + i.toString()),
+      );
+    }
+
+    return arr;
   }
 }

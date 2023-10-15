@@ -22,7 +22,7 @@ export class Huffman extends TreeValue {
   }
 
   equivalent(other: this): boolean {
-    return this.char === other.char;
+    return this.count === other.count && this.char === other.char;
   }
 }
 

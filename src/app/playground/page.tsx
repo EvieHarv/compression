@@ -11,12 +11,10 @@ import { useState } from "react";
 export default function Playground() {
   const [text, updateText] = useState("");
 
-  let ascii = StringToASCII(text);
+  let ascii = StringToASCII("hello world");
 
   const tree = new HuffmanTree();
   let encoded = tree.buildFromString("hello world");
-  console.log(tree);
-  console.log(tree.decode(encoded));
 
   return (
     <StandardPageWrapper>

@@ -14,7 +14,7 @@ export class Huffman extends TreeValue {
   }
 
   print(): string {
-    return `${this.count}${this.char ? ` | "${this.char}"` : ""}`;
+    return `${this.count}${this.char ? `|${this.char}` : ""}`;
   }
 
   order(other: this) {

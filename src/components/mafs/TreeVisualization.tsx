@@ -1,6 +1,6 @@
 import { COLORS } from "@/lib/constants";
 import { Tree, TreeNode, TreeValue } from "@/lib/encodings/tree";
-import { Circle, Coordinates, Mafs, Text, Transform } from "mafs";
+import { Circle, Coordinates, Line, Mafs, Text, Transform, vec } from "mafs";
 import { styled } from "styled-components";
 
 /**
@@ -23,6 +23,10 @@ class VisValue<T extends TreeValue> extends TreeValue {
   print(): string {
     return `${this.x}`;
     // return `${this.x} | ${this.y} | ${this.mod} | ${this.innerValue.print()}`;
+  }
+
+  getKey(): string {
+    return `${this.x} | ${this.y} | ${this.mod} | ${this.innerValue.print()}`;
   }
 
   order(other: this) {
@@ -148,6 +152,7 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
   }
 
   private shiftConflicts(parent: TreeNode<VisValue<T>>, index: number) {
+    console.log(parent.value.print());
     // All sub-shifts are good, shift the children of this node now,
     // starting with the 2nd from the leftmost child node.
     // Get the left contour (the least values at every sublevel)
@@ -158,6 +163,9 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
     for (let j = 0; j < index; j++) {
       var siblingContour: contourMap = {};
       this.getRightContour(parent.children[j], 0, siblingContour);
+
+      console.log(nodeContour);
+      console.log(siblingContour);
 
       const deepestCurrent = Math.max(...Object.keys(nodeContour).map(Number));
       const deepestSiblings = Math.max(
@@ -172,7 +180,9 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
         level++
       ) {
         var distance = nodeContour[level] - siblingContour[level];
-        shiftValue = Math.abs(distance) + 1;
+        if (distance + shiftValue < 1) {
+          shiftValue = 1 - distance;
+        }
       }
 
       if (shiftValue > 0) {
@@ -259,47 +269,70 @@ export default function TreeVisualization<
   U extends TreeValue,
   T extends Tree<U>,
 >({ tree, labelBranches = false }: Props<U, T>) {
-  const viewSizeX = 10;
-  const viewSizeY = 10;
+  let viewSizeX = 10;
+  let viewSizeY = 10;
 
-  // Debug
-  const vT = new VisTree(tree);
-  vT.calculatePositions();
+  const xF = 4.5; // X multiplication factor
+  const yF = -3.5; // Y multiplication factor
 
-  const IterateTree = (tree: T) => {
-    const visTree = new VisTree(tree);
-    visTree.calculatePositions();
-
+  const nodeToBox = (node: TreeNode<VisValue<U>>): JSX.Element => {
     return (
-      <Text x={0} y={0}>
-        TODO
-      </Text>
+      <Transform key={node.value.getKey()}>
+        <Circle
+          center={[node.value.x * xF, node.value.y * yF]}
+          radius={1}
+        ></Circle>
+        <Text x={node.value.x * xF} y={node.value.y * yF} size={16}>
+          {node.value.innerValue.print()}
+        </Text>
+      </Transform>
     );
   };
+
+  const iterateTree = (node: TreeNode<VisValue<U>>): JSX.Element[] => {
+    let arr: JSX.Element[] = [];
+
+    arr.push(nodeToBox(node));
+
+    for (let i = 0; i < node.children.length; i++) {
+      arr = arr.concat(iterateTree(node.children[i]));
+
+      let topNode: vec.Vector2 = [node.value.x * xF, node.value.y * yF];
+      let bottomNode: vec.Vector2 = [
+        node.children[i].value.x * xF,
+        node.children[i].value.y * yF,
+      ];
+
+      let midpoint = 0; // todo, add branch nums
+
+      arr.push(
+        <Line.Segment
+          key={node.value.getKey() + node.children[i].value.getKey()}
+          point1={[topNode[0], topNode[1] - 1]}
+          point2={[bottomNode[0], bottomNode[1] + 1]}
+        ></Line.Segment>,
+      );
+    }
+
+    return arr;
+  };
+
+  let visTree = new VisTree(tree);
+  visTree.calculatePositions();
+
+  let nodes = null;
+
+  if (visTree.root) nodes = iterateTree(visTree.root);
 
   return (
     <Container>
       <Mafs
         pan={false}
-        viewBox={{ x: [-5, 25], y: [-viewSizeY * 2, viewSizeY] }}
+        viewBox={{ x: [5, 50], y: [-viewSizeY * 2, viewSizeY] }}
       >
         {/* <Coordinates.Cartesian /> */}
         {/* <Vector tail={[0, 0]} tip={[viewSizeX, viewSizeY]} /> */}
-        {IterateTree(tree)}
-        {vT.asLocationMap().map((val, index) => {
-          // Debug
-          return (
-            <Transform key={index}>
-              <Circle
-                center={[val[1].x * 5, -val[1].y * 3]}
-                radius={1}
-              ></Circle>
-              <Text x={val[1].x * 5} y={-val[1].y * 3} size={5}>
-                {val[0]} | x={val[1].print()} || {val[1].innerValue.print()}
-              </Text>
-            </Transform>
-          );
-        })}
+        {nodes?.map((x) => x)}
       </Mafs>
     </Container>
   );

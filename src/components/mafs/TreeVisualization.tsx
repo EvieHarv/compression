@@ -3,6 +3,10 @@ import { Tree, TreeNode, TreeValue } from "@/lib/encodings/tree";
 import { Circle, Coordinates, Line, Mafs, Text, Transform, vec } from "mafs";
 import { styled } from "styled-components";
 
+const NODE_SIZE = 2; // Size of each node.
+const NODE_SIBLING_DIST = 0.5; // Spacing between sibling nodes
+const TREE_SPACING = NODE_SIBLING_DIST * 2; // Spacing between seperated tree segments
+
 /**
  * Supporting tree values for the visualization.
  */
@@ -125,7 +129,11 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
     for (let i = 0; i < node.children.length; i++) {
       this.recurseInitial(node.children[i], node, i, level + 1);
     }
-    node.value.x = index;
+    let prevX = 0;
+    if (index > 0 && parent) {
+      prevX = parent.children[index - 1].value.x;
+    }
+    node.value.x = prevX + NODE_SIZE + NODE_SIBLING_DIST;
     node.value.y = level;
 
     // At this point, we know all children already have their assignments,
@@ -152,7 +160,6 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
   }
 
   private shiftConflicts(parent: TreeNode<VisValue<T>>, index: number) {
-    console.log(parent.value.print());
     // All sub-shifts are good, shift the children of this node now,
     // starting with the 2nd from the leftmost child node.
     // Get the left contour (the least values at every sublevel)
@@ -163,9 +170,6 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
     for (let j = 0; j < index; j++) {
       var siblingContour: contourMap = {};
       this.getRightContour(parent.children[j], 0, siblingContour);
-
-      console.log(nodeContour);
-      console.log(siblingContour);
 
       const deepestCurrent = Math.max(...Object.keys(nodeContour).map(Number));
       const deepestSiblings = Math.max(
@@ -180,8 +184,8 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
         level++
       ) {
         var distance = nodeContour[level] - siblingContour[level];
-        if (distance + shiftValue < 1) {
-          shiftValue = 1 - distance;
+        if (distance + shiftValue < NODE_SIZE + TREE_SPACING) {
+          shiftValue = NODE_SIZE + TREE_SPACING - distance;
         }
       }
 
@@ -272,7 +276,7 @@ export default function TreeVisualization<
   let viewSizeX = 10;
   let viewSizeY = 10;
 
-  const xF = 4.5; // X multiplication factor
+  const xF = 1; // X multiplication factor
   const yF = -3.5; // Y multiplication factor
 
   const nodeToBox = (node: TreeNode<VisValue<U>>): JSX.Element => {

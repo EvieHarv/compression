@@ -63,7 +63,7 @@ export class HuffmanTree extends Tree<Huffman> {
   /**
    * Optimizes the tree to the specific input.
    *
-   * @param input: String to optimize the tree to.
+   * @param input String to optimize the tree to.
    * @returns The encoding of the input string.
    */
   buildFromString(input: string): string {

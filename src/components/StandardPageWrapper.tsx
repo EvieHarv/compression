@@ -41,4 +41,6 @@ const HeaderWrapper = styled.div`
 const ContentWrapper = styled.div`
   max-width: 100ch;
   grid-area: content;
+
+  overflow-wrap: anywhere;
 `;

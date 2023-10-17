@@ -6,7 +6,7 @@ import BoxBreakdown, { BoxBreakdownBox } from "@/components/mafs/BoxBreakdown";
 import TreeVisualization from "@/components/mafs/TreeVisualization";
 import StringToASCII from "@/lib/encodings/ascii";
 import { HuffmanTree } from "@/lib/encodings/huffman";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Playground() {
   const [text, updateText] = useState("");
@@ -33,9 +33,11 @@ export default function Playground() {
         onChange={(e) => updateText(e.target.value)}
       ></input>
       <Heading>ASCII</Heading>
+      {StringToASCII(text).length} bits - {StringToASCII(text)}
       <BoxBreakdown input={asciiBoxes} />
       <hr />
       <Heading>Huffman</Heading>
+      {encoded.length} bits - {encoded}
       <BoxBreakdown input={huffmanBoxes} />
       <Heading>Using tree</Heading>
       <TreeVisualization tree={tree} labelBranches={true} />

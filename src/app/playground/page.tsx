@@ -4,7 +4,6 @@ import StandardPageWrapper from "@/components/StandardPageWrapper";
 import { Heading } from "@/components/StyledSmalls";
 import AsciiBreakdown from "@/components/mafs/AsciiBreakdown";
 import TreeVisualization from "@/components/mafs/TreeVisualization";
-import StringToASCII from "@/lib/encodings/ascii";
 import { HuffmanTree } from "@/lib/encodings/huffman";
 import { useState } from "react";
 

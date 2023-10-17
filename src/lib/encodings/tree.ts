@@ -77,6 +77,11 @@ export abstract class Tree<T extends TreeValue> {
     throw new Error("PENDING DEFAULT IMPLEMENTATION");
   }
 
+  /**
+   * Throws all node values into a list. No guarentees made about order.
+   *
+   * @returns A list representing the tree values
+   */
   asList(): T[] {
     if (this.root) return this.recurseList(this.root);
     return [];
@@ -93,6 +98,11 @@ export abstract class Tree<T extends TreeValue> {
     return arr;
   }
 
+  /**
+   * Maps the location of a node via tree indicies.
+   *
+   * @returns A location map with corresponding values.
+   */
   asLocationMap(): locationMap<T>[] {
     if (this.root) return this.recurseLocationMap(this.root);
     return [];

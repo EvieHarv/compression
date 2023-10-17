@@ -9,7 +9,7 @@ import { styled } from "styled-components";
 const NODE_SIZE = 2; // Size of each node.
 const NODE_SIBLING_DIST = 0.5; // Spacing between sibling nodes
 const TREE_SPACING = NODE_SIBLING_DIST * 2; // Spacing between seperated tree segments
-const VERTICAL_SPACING = 3; // How far in the y direction nodes are moved at each level
+const VERTICAL_SPACING = -3; // How far in the y direction nodes are moved at each level
 const BRANCH_TEXT_VERT = 0.25; // How far to move branch numbers up (if displayed)
 const BRANCH_TEXT_HORIZ = 0.25; // How far to move branch numbers to the side (if displayed)
 
@@ -99,8 +99,6 @@ class VisValue<T extends TreeValue> extends TreeValue {
  *
  * Implements Reingold-Tilford (RT). Note that this implementation allows for negative
  * `x` values, and it is expected that the viewport be re-bound to fit.
- *
- * Note that `y` values are positve.
  */
 class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
   /**
@@ -173,7 +171,7 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
     }
     // Assign intial position
     node.value.x = prevSiblingX + NODE_SIZE + NODE_SIBLING_DIST;
-    node.value.y = level * VERTICAL_SPACING;
+    node.value.y = level;
 
     // At this point, we know all children already have their assignments,
     // and so we may do updated midpoint assignments based on that.
@@ -317,7 +315,8 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
   }
 
   /**
-   * Recursively applies all `mod` values to children, shifting subtrees over.
+   * Recursively applies all `mod` values to children, shifting subtrees over,
+   * and applies vertical spacing.
    */
   applyMods() {
     if (this.root) this.recurseApplyMods(this.root, this.root.value.mod);
@@ -327,6 +326,9 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
       this.recurseApplyMods(node.children[i], sumMods + node.value.mod);
     }
     node.value.x += sumMods;
+    // We apply verticle spacing here instead of when we originally assign it
+    // because it's more nice to have simple y-levels for the math above.
+    node.value.y *= VERTICAL_SPACING;
   }
 
   /**
@@ -380,8 +382,8 @@ export default function TreeVisualization<
   const nodeToBox = (node: TreeNode<VisValue<U>>): JSX.Element => {
     return (
       <Transform key={node.value.getKey()}>
-        <Circle center={[node.value.x, -node.value.y]} radius={1}></Circle>
-        <Text x={node.value.x} y={-node.value.y} size={textSize}>
+        <Circle center={[node.value.x, node.value.y]} radius={1}></Circle>
+        <Text x={node.value.x} y={node.value.y} size={textSize}>
           {node.value.innerValue.print()}
         </Text>
       </Transform>
@@ -406,10 +408,10 @@ export default function TreeVisualization<
       arr = arr.concat(iterateTree(node.children[i]));
 
       // Current node (top) and current child node (bottom)
-      let topNode: vec.Vector2 = [node.value.x, -node.value.y];
+      let topNode: vec.Vector2 = [node.value.x, node.value.y];
       let bottomNode: vec.Vector2 = [
         node.children[i].value.x,
-        -node.children[i].value.y,
+        node.children[i].value.y,
       ];
 
       // Draw a line connecting these two nodes
@@ -473,7 +475,7 @@ export default function TreeVisualization<
         pan={false}
         viewBox={{
           x: [bounds.x.min - 1, bounds.x.max + 1],
-          y: [-bounds.y.max - 1, -bounds.y.min + 1],
+          y: [bounds.y.min - 1, bounds.y.max + 1],
         }}
       >
         {/* <Coordinates.Cartesian /> */}

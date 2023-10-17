@@ -8,7 +8,7 @@ export default function Header() {
   return (
     <FullContainer>
       <WidthContainer>
-        Evie's Encoding Emporium
+        {"Evie's Encoding Emporium"}
         <hr />
         <LinksContainer>
           <Link href="/">home</Link>

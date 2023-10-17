@@ -4,11 +4,27 @@ import { useWindowWidth } from "@react-hook/window-size";
 import { Coordinates, Mafs, Polygon, Text, Transform, vec, Vector } from "mafs";
 import styled from "styled-components";
 
-interface Props {
-  input: string;
+/**
+ * Simple class for representing a box in the boxBreakdown
+ */
+export class BoxBreakdownBox {
+  boxText: string;
+  belowText: string;
+
+  /**
+   *
+   */
+  constructor(boxText: string, belowText: string) {
+    this.boxText = boxText;
+    this.belowText = belowText;
+  }
 }
 
-export default function AsciiBreakdown({ input }: Props) {
+interface Props {
+  input: BoxBreakdownBox[];
+}
+
+export default function BoxBreakdown({ input }: Props) {
   const MAX_CHAR_IN_LINE_DESKTOP = 12; // Max character boxes in a single line
   const MAX_CHAR_IN_LINE_TABLET = 6; // Max character boxes in a single line
   const MAX_CHAR_IN_LINE_MOBILE = 4; // Max character boxes in a single line
@@ -35,7 +51,7 @@ export default function AsciiBreakdown({ input }: Props) {
   // TODO: I didn't originally know about <Transform> when writing this,
   // but now I do and you could totally simplify the offset logic with that.
   // Left as an exercise for the reader, let's say.
-  const MakeBox = (row: number, column: number, char: string) => {
+  const MakeBox = (row: number, column: number, box: BoxBreakdownBox) => {
     // Origin of the top left point of the box
     const Origin: vec.Vector2 = [
       column * SIZE_BOX + column * GAP_HORIZ,
@@ -64,7 +80,7 @@ export default function AsciiBreakdown({ input }: Props) {
           y={Origin[1] - SIZE_BOX / 2}
           size={SIZE_TEXT_MAIN}
         >
-          {char}
+          {box.boxText}
         </Text>
 
         {/* Text below box */}
@@ -73,7 +89,7 @@ export default function AsciiBreakdown({ input }: Props) {
           y={Origin[1] - SIZE_BOX - GAP_BELOW}
           size={SIZE_TEXT_BELOW}
         >
-          {StringToASCII(char)}
+          {box.belowText}
         </Text>
       </Transform>
     );
@@ -108,7 +124,7 @@ export default function AsciiBreakdown({ input }: Props) {
       >
         {/* <Coordinates.Cartesian /> */}
         {/* <Vector tail={[0, 0]} tip={[viewSizeX, viewSizeY]} /> */}
-        {input.split("").map((c, i) => {
+        {input.map((c, i) => {
           const row = Math.floor(i / MAX_CHAR_IN_LINE); // We use floor because we're 0 indexed
           const column = i % MAX_CHAR_IN_LINE;
           return MakeBox(row, column, c);

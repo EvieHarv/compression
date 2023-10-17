@@ -381,7 +381,7 @@ export default function TreeVisualization<
     return (
       <Transform key={node.value.getKey()}>
         <Circle center={[node.value.x, -node.value.y]} radius={1}></Circle>
-        <Text x={node.value.x} y={-node.value.y} size={12}>
+        <Text x={node.value.x} y={-node.value.y} size={textSize}>
           {node.value.innerValue.print()}
         </Text>
       </Transform>
@@ -445,7 +445,7 @@ export default function TreeVisualization<
             key={node.value.getKey() + node.children[i].value.getKey() + "text"}
             x={midpoint[0]}
             y={midpoint[1]}
-            size={12}
+            size={textSize}
           >
             {i}
           </Text>,
@@ -460,6 +460,8 @@ export default function TreeVisualization<
   let visTree = new VisTree(tree);
   visTree.calculatePositions();
   const bounds = visTree.getBounds();
+
+  const textSize = 18; // TODO: calculate on-the-fly.
 
   // We know positions now - get visual tree representation
   let jsxNodes: JSX.Element[] = [];
@@ -482,6 +484,6 @@ export default function TreeVisualization<
 }
 
 const Container = styled.div`
-  border: 1px solid ${COLORS.text};
+  /* border: 1px solid ${COLORS.text}; */
   pointer-events: none;
 `;

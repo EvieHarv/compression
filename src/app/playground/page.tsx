@@ -2,8 +2,9 @@
 
 import StandardPageWrapper from "@/components/StandardPageWrapper";
 import { Heading } from "@/components/StyledSmalls";
-import AsciiBreakdown from "@/components/mafs/AsciiBreakdown";
+import BoxBreakdown, { BoxBreakdownBox } from "@/components/mafs/BoxBreakdown";
 import TreeVisualization from "@/components/mafs/TreeVisualization";
+import StringToASCII from "@/lib/encodings/ascii";
 import { HuffmanTree } from "@/lib/encodings/huffman";
 import { useState } from "react";
 
@@ -13,19 +14,30 @@ export default function Playground() {
   const tree = new HuffmanTree();
   let encoded = tree.buildFromString(text);
 
+  let asciiBoxes = text
+    .split("")
+    .map((char) => new BoxBreakdownBox(char, StringToASCII(char)));
+
+  let huffmanBoxes = text
+    .split("")
+    .map((char) => new BoxBreakdownBox(char, tree.encode(char)));
+
   return (
     <StandardPageWrapper>
       <Heading>~ ✨ Dev Area ✨ ~</Heading>
       <hr />
-      put text here:
+      Text:{" "}
       <input
         type="text"
         value={text}
         onChange={(e) => updateText(e.target.value)}
       ></input>
-      <AsciiBreakdown input={text} />
-      <Heading>visual break</Heading>
+      <Heading>ASCII</Heading>
+      <BoxBreakdown input={asciiBoxes} />
       <hr />
+      <Heading>Huffman</Heading>
+      <BoxBreakdown input={huffmanBoxes} />
+      <Heading>Using tree</Heading>
       <TreeVisualization tree={tree} labelBranches={true} />
     </StandardPageWrapper>
   );

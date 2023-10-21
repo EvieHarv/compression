@@ -4,9 +4,11 @@ import StandardPageWrapper from "@/components/StandardPageWrapper";
 import { Heading } from "@/components/StyledSmalls";
 import BoxBreakdown, { BoxBreakdownBox } from "@/components/mafs/BoxBreakdown";
 import TreeVisualization from "@/components/mafs/TreeVisualization";
+import { BREAKPOINTS } from "@/lib/constants";
 import StringToASCII from "@/lib/encodings/ascii";
 import { HuffmanTree } from "@/lib/encodings/huffman";
-import { useEffect, useState } from "react";
+import { useWindowWidth } from "@react-hook/window-size";
+import { useState } from "react";
 
 export default function Playground() {
   const [text, updateText] = useState("");
@@ -21,6 +23,8 @@ export default function Playground() {
   let huffmanBoxes = text
     .split("")
     .map((char) => new BoxBreakdownBox(char, tree.encode(char)));
+
+  const screenWidth = useWindowWidth();
 
   return (
     <StandardPageWrapper>
@@ -40,7 +44,11 @@ export default function Playground() {
       {encoded.length} bits - {encoded}
       <BoxBreakdown input={huffmanBoxes} />
       <Heading>Using tree</Heading>
-      <TreeVisualization tree={tree} labelBranches={true} />
+      <TreeVisualization
+        tree={tree}
+        rotate={screenWidth <= BREAKPOINTS.phone ? 90 : 0}
+        labelBranches={true}
+      />
     </StandardPageWrapper>
   );
 }

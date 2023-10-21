@@ -1,6 +1,16 @@
 import { COLORS } from "@/lib/constants";
 import { Tree, TreeNode, TreeValue } from "@/lib/encodings/tree";
-import { Circle, Coordinates, Line, Mafs, Text, Transform, vec } from "mafs";
+import {
+  Circle,
+  Coordinates,
+  Line,
+  Mafs,
+  Polygon,
+  Text,
+  Transform,
+  Vector,
+  vec,
+} from "mafs";
 import { styled } from "styled-components";
 
 /**
@@ -348,13 +358,19 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
     }
 
     return bounds.getCombined(
-      new TreeBounds(node.value.x, node.value.x, node.value.y, node.value.y),
+      new TreeBounds(
+        node.value.x - NODE_SIZE / 2,
+        node.value.x + NODE_SIZE / 2,
+        node.value.y - NODE_SIZE / 2,
+        node.value.y + NODE_SIZE / 2,
+      ),
     );
   }
 }
 
 interface Props<U extends TreeValue, T extends Tree<U>> {
   tree: T;
+  rotate?: number;
   labelBranches?: boolean;
 }
 
@@ -366,13 +382,14 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
  * https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/
  *
  * @param tree Any class implementing Tree.
+ * @param rotate Rotates the tree around the origin (top-left corner), given in degrees.
  * @param labelBranches Toggles if branches of a node are labeled with a number,
  *        0 at the leftmost branch and counting up.
  */
 export default function TreeVisualization<
   U extends TreeValue,
   T extends Tree<U>,
->({ tree, labelBranches = false }: Props<U, T>) {
+>({ tree, rotate = 0, labelBranches = false }: Props<U, T>) {
   /**
    * Takes a single node and gets the properly-placed Mafs representation of it.
    *
@@ -380,6 +397,8 @@ export default function TreeVisualization<
    * @returns A Mafs element with the node value printed inside
    */
   const nodeToBox = (node: TreeNode<VisValue<U>>): JSX.Element => {
+    // TODO: Allow for coloring a node without gunking up the API
+    //  on the TreeValue interface too much. Maybe apart of print()?
     return (
       <Transform key={node.value.getKey()}>
         <Circle center={[node.value.x, node.value.y]} radius={1}></Circle>
@@ -463,23 +482,55 @@ export default function TreeVisualization<
   visTree.calculatePositions();
   const bounds = visTree.getBounds();
 
-  const textSize = 18; // TODO: calculate on-the-fly.
+  let x_size = bounds.x.max - bounds.x.min;
+  let y_size = bounds.y.max - bounds.y.min;
+
+  const MAGIC_TEXT_NUM = 80; // TODO: Entirely arbitrary and a bit janky.
+  const textSize = MAGIC_TEXT_NUM / Math.sqrt(x_size + 1);
 
   // We know positions now - get visual tree representation
   let jsxNodes: JSX.Element[] = [];
   if (visTree.root) jsxNodes = iterateTree(visTree.root);
 
+  // Rotate the tree
+  const radians = rotate * (Math.PI / 180);
+  // Shifts corner to origin and rotates about the origin.
+  let transform: vec.Matrix = vec
+    .matrixBuilder()
+    .translate(Math.abs(bounds.x.min), -Math.abs(bounds.y.max))
+    .rotate(radians)
+    .get();
+  let boundVec: vec.Vector2 = [x_size, -y_size];
+  boundVec = vec.rotate(boundVec, radians);
+
+  // TODO: Currently, mobile styling (i.e. rotating) is expected
+  //  to be done outside of the component. This is inconsistent
+  //  with other components, but I'd like to maintain rotations
+  //  as a more "outside" option. Maybe provide an auto-rotate default,
+  //  with specific rotations as overrides? unsure.
+  // TODO: Resize height if needed?
   return (
     <Container>
       <Mafs
         pan={false}
         viewBox={{
-          x: [bounds.x.min - 1, bounds.x.max + 1],
-          y: [bounds.y.min - 1, bounds.y.max + 1],
+          x: [Math.min(boundVec[0], 0), Math.max(boundVec[0], 0)],
+          y: [Math.min(boundVec[1], 0), Math.max(boundVec[1], 0)],
         }}
       >
+        {/* <Vector tip={boundVec} weight={5}></Vector> */}
         {/* <Coordinates.Cartesian /> */}
-        {jsxNodes}
+        <Transform matrix={transform}>
+          {jsxNodes}
+          {/* <Polygon
+            points={[
+              [bounds.x.min, bounds.y.min],
+              [bounds.x.min, bounds.y.max],
+              [bounds.x.max, bounds.y.max],
+              [bounds.x.max, bounds.y.min],
+            ]}
+          ></Polygon> */}
+        </Transform>
       </Mafs>
     </Container>
   );

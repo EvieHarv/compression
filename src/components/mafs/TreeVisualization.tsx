@@ -19,9 +19,9 @@ import { styled } from "styled-components";
 const NODE_SIZE = 2; // Size of each node.
 const NODE_SIBLING_DIST = 0.5; // Spacing between sibling nodes
 const TREE_SPACING = NODE_SIBLING_DIST * 2; // Spacing between seperated tree segments
-const VERTICAL_SPACING = -3; // How far in the y direction nodes are moved at each level
-const BRANCH_TEXT_VERT = 0.25; // How far to move branch numbers up (if displayed)
-const BRANCH_TEXT_HORIZ = 0.25; // How far to move branch numbers to the side (if displayed)
+const VERTICAL_SPACING = -3.5; // How far in the y direction nodes are moved at each level
+const BRANCH_TEXT_VERT = 0.3; // How far to move branch numbers up (if displayed)
+const BRANCH_TEXT_HORIZ = 0.3; // How far to move branch numbers to the side (if displayed)
 
 /**
  * Helper class for calculating tree boundaries.
@@ -372,6 +372,7 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
   tree: T;
   rotate?: number;
   labelBranches?: boolean;
+  highlightLeaves?: boolean;
 }
 
 /**
@@ -389,7 +390,12 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
 export default function TreeVisualization<
   U extends TreeValue,
   T extends Tree<U>,
->({ tree, rotate = 0, labelBranches = false }: Props<U, T>) {
+>({
+  tree,
+  rotate = 0,
+  labelBranches = false,
+  highlightLeaves = true,
+}: Props<U, T>) {
   /**
    * Takes a single node and gets the properly-placed Mafs representation of it.
    *
@@ -401,7 +407,15 @@ export default function TreeVisualization<
     //  on the TreeValue interface too much. Maybe apart of print()?
     return (
       <Transform key={node.value.getKey()}>
-        <Circle center={[node.value.x, node.value.y]} radius={1}></Circle>
+        <Circle
+          center={[node.value.x, node.value.y]}
+          radius={NODE_SIZE / 2}
+          color={
+            highlightLeaves && node.children.length === 0
+              ? "#00AA00"
+              : "#000000"
+          }
+        ></Circle>
         <Text x={node.value.x} y={node.value.y} size={textSize}>
           {node.value.innerValue.print()}
         </Text>

@@ -5,7 +5,8 @@ export class RandomTreeValue extends TreeValue {
   index = 0;
 
   print(): string {
-    return `${this.level}|${this.index}`;
+    return "";
+    // return `${this.level}|${this.index}`;
   }
   order(other: this): boolean {
     throw new Error("Method not implemented.");

@@ -52,7 +52,7 @@ export default function PlaygroundRandom() {
           pattern="[0-9]*"
           min={0}
           max={10}
-          value={maxLevels}
+          value={maxLevels.toString()}
           onChange={(e) => setMaxLevels(validate(e.target.value))}
         />
       </Par>

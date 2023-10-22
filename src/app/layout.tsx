@@ -9,14 +9,6 @@ import MafsStyle from "@/lib/MafsStyle";
 
 const inter = Roboto_Mono({ subsets: ["latin"] });
 
-export const metadata = {
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
-};
-
 export default function RootLayout({
   children,
 }: {

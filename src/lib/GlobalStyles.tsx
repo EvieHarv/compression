@@ -102,6 +102,10 @@ const GlobalStyles = createGlobalStyle`
     text-decoration: none;
   }
 
+  input {
+    font-size: 100%;
+  }
+
   /* Full height body */
   #__next {
     height: 100%;

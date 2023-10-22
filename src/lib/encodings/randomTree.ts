@@ -17,6 +17,14 @@ export class RandomTreeValue extends TreeValue {
 }
 
 export class RandomTree extends Tree<RandomTreeValue> {
+  /**
+   * Builds a new random tree
+   */
+  constructor(max_children: number = 4, levels: number = 4) {
+    super();
+    this.build(max_children, levels);
+  }
+
   build(max_children: number = 4, levels: number = 4): void {
     this.root = new TreeNode(new RandomTreeValue());
     this.buildRecurse(this.root, max_children, levels);

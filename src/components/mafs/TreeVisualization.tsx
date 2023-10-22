@@ -221,13 +221,15 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
     // so we may shift this node now.
 
     // Get the left contour of this node (the least `x` values at every sublevel)
-    var nodeContour: contourMap = {};
+    let nodeContour: contourMap = {};
     this.getLeftContour(parent.children[index], 0, nodeContour);
 
     // Iterate over all this node's left siblings.
+    let shiftValues = [];
     for (let j = 0; j < index; j++) {
+      shiftValues.push(0);
       // Get the right contour of this sibling node (the largest `x` values at every sublevel)
-      var siblingContour: contourMap = {};
+      let siblingContour: contourMap = {};
       this.getRightContour(parent.children[j], 0, siblingContour);
 
       // Get the deepest y levels
@@ -237,25 +239,56 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
       );
 
       // Calculate largest overlap by iterating over each contour map level
-      let shiftValue = 0;
       for (
         let level = parent.children[index].value.y + 1;
         level <= Math.min(deepestCurrent, deepestSiblings);
         level++
       ) {
-        var distance = nodeContour[level] - siblingContour[level];
-        if (distance + shiftValue < NODE_SIZE + TREE_SPACING) {
-          shiftValue = NODE_SIZE + TREE_SPACING - distance;
+        let distance = nodeContour[level] - siblingContour[level];
+        if (distance + shiftValues[j] < NODE_SIZE + TREE_SPACING) {
+          shiftValues[j] = NODE_SIZE + TREE_SPACING - distance;
         }
       }
 
       // If there's an overlap, shift this subtree over.
-      if (shiftValue > 0) {
-        parent.children[index].value.x += shiftValue;
-        parent.children[index].value.mod += shiftValue;
+    }
+    let shiftValue = Math.max(...shiftValues);
+    if (shiftValue > 0) {
+      parent.children[index].value.x += shiftValue;
+      parent.children[index].value.mod += shiftValue;
+      this.centerNodesBetween(
+        parent,
+        shiftValues.lastIndexOf(shiftValue),
+        index,
+      );
+    }
+  }
 
-        // TODO: Implement this. Only matters with node counts > 2.
-        // this.centerNodesBetween(node, sibling);
+  private centerNodesBetween(
+    parent: TreeNode<VisValue<T>>,
+    leftIndex: number,
+    rightIndex: number,
+  ) {
+    const numNodesBetween = rightIndex - leftIndex - 1;
+
+    const leftNode = parent.children[leftIndex];
+    const rightNode = parent.children[rightIndex];
+
+    if (numNodesBetween > 0) {
+      let distanceBetweenNodes =
+        (rightNode.value.x - leftNode.value.x) / (numNodesBetween + 1);
+
+      let count = 1;
+      for (let i = leftIndex + 1; i < rightIndex; i++) {
+        let middleNode = parent.children[i];
+
+        let desiredX = leftNode.value.x + distanceBetweenNodes * count;
+        let offset = desiredX - middleNode.value.x;
+        middleNode.value.x += offset;
+        middleNode.value.mod += offset;
+
+        count++;
+        this.shiftConflicts(parent, i);
       }
     }
   }
@@ -337,7 +370,7 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
     }
     node.value.x += sumMods;
     // We apply verticle spacing here instead of when we originally assign it
-    // because it's more nice to have simple y-levels for the math above.
+    // because it's more nice to have simple y-levels for the math along the way.
     node.value.y *= VERTICAL_SPACING;
   }
 

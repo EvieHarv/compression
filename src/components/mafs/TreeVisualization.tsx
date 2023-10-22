@@ -290,6 +290,7 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
         count++;
         this.shiftConflicts(parent, i);
       }
+      this.shiftConflicts(parent, rightIndex);
     }
   }
 

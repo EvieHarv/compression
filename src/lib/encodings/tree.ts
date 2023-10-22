@@ -78,13 +78,36 @@ export abstract class Tree<T extends TreeValue> {
   }
 
   /**
+   * Recursively finds the number of nodes in the tree.
+   *
+   * @returns Number of nodes
+   */
+  size(): number {
+    if (this.root) return this.subtreeSize(this.root);
+    else return 0;
+  }
+  /**
+   * Recursively finds the number of nodes in the subtree.
+   *
+   * @param node Node to start from
+   * @returns Number of nodes in subtree
+   */
+  subtreeSize(node: TreeNode<T>): number {
+    let num = 1;
+    for (let i = 0; i < node.children.length; i++) {
+      num += this.subtreeSize(node.children[i]);
+    }
+    return num;
+  }
+
+  /**
    * Throws all node values into a list. No guarentees made about order.
    *
    * @returns A list representing the tree values
    */
   asList(): T[] {
     if (this.root) return this.recurseList(this.root);
-    return [];
+    else return [];
   }
   private recurseList(node: TreeNode<T>): T[] {
     let arr: T[] = [];
@@ -105,7 +128,7 @@ export abstract class Tree<T extends TreeValue> {
    */
   asLocationMap(): locationMap<T>[] {
     if (this.root) return this.recurseLocationMap(this.root);
-    return [];
+    else return [];
   }
   private recurseLocationMap(
     node: TreeNode<T>,

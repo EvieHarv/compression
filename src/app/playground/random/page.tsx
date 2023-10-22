@@ -12,7 +12,7 @@ import styled from "styled-components";
 export default function PlaygroundRandom() {
   const screenWidth = useWindowWidth();
   const [maxChildren, setMaxChildren] = useState(3);
-  const [maxLevels, setMaxLevels] = useState(9);
+  const [maxLevels, setMaxLevels] = useState(6);
   const [buttonPressed, setButtonPressed] = useState(0);
 
   const [randomTree, setRandomTree] = useState<any>(null);
@@ -22,6 +22,13 @@ export default function PlaygroundRandom() {
     const newRandomTree = new RandomTree(maxChildren, maxLevels);
     setRandomTree(newRandomTree);
   }, [maxChildren, maxLevels, buttonPressed]);
+
+  const validate = (val: string): number => {
+    let num: number = Number(val.replace(/^0+/, ""));
+    num = Math.max(num, 0);
+    num = Math.min(num, 10);
+    return num;
+  };
 
   return (
     <StandardPageWrapper>
@@ -34,8 +41,8 @@ export default function PlaygroundRandom() {
           pattern="[0-9]*"
           min={0}
           max={10}
-          value={maxChildren}
-          onChange={(e) => setMaxChildren(Number(e.target.value))}
+          value={maxChildren.toString()}
+          onChange={(e) => setMaxChildren(validate(e.target.value))}
         />
       </Par>
       <Par>
@@ -46,7 +53,7 @@ export default function PlaygroundRandom() {
           min={0}
           max={10}
           value={maxLevels}
-          onChange={(e) => setMaxLevels(Number(e.target.value))}
+          onChange={(e) => setMaxLevels(validate(e.target.value))}
         />
       </Par>
       <Par>

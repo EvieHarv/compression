@@ -126,7 +126,7 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
    * Expects a shadow tree to already have been built.
    */
   calculatePositions() {
-    this.initialAssign();
+    this.getBaseValues();
     this.applyMods();
   }
 
@@ -159,8 +159,10 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
   /**
    * Preforms the initial postorder traversal in RT,
    * getting the first-step `x` and final `y` values.
+   *
+   * Then, calls to shift conflicts.
    */
-  initialAssign() {
+  getBaseValues() {
     if (this.root) this.recurseInitial(this.root);
   }
   private recurseInitial(

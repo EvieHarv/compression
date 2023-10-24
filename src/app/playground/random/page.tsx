@@ -13,15 +13,15 @@ export default function PlaygroundRandom() {
   const screenWidth = useWindowWidth();
   const [maxChildren, setMaxChildren] = useState(3);
   const [maxLevels, setMaxLevels] = useState(6);
-  const [buttonPressed, setButtonPressed] = useState(0);
+  const [seed, setSeed] = useState(22321422);
 
   const [randomTree, setRandomTree] = useState<any>(null);
 
   useEffect(() => {
     // This part will only run on the client, avoiding the hydration issue.
-    const newRandomTree = new RandomTree(maxChildren, maxLevels);
+    const newRandomTree = new RandomTree(maxChildren, maxLevels, seed * 127);
     setRandomTree(newRandomTree);
-  }, [maxChildren, maxLevels, buttonPressed]);
+  }, [maxChildren, maxLevels, seed]);
 
   const validate = (val: string): number => {
     let num: number = Number(val.replace(/^0+/, ""));
@@ -57,7 +57,19 @@ export default function PlaygroundRandom() {
         />
       </Par>
       <Par>
-        <Button onClick={() => setButtonPressed((val) => val + 1)}>
+        Seed:{" "}
+        <input
+          type="number"
+          pattern="[0-9]*"
+          min={0}
+          value={seed.toString()}
+          onChange={(e) => setSeed(Number(e.target.value))}
+        />
+      </Par>
+      <Par>
+        <Button
+          onClick={() => setSeed(Math.floor(Math.random() * 472313222387))}
+        >
           Generate New
         </Button>
       </Par>

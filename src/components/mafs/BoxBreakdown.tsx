@@ -1,5 +1,4 @@
 import { BREAKPOINTS, COLORS } from "@/lib/constants";
-import StringToASCII from "@/lib/encodings/ascii";
 import { useWindowWidth } from "@react-hook/window-size";
 import { Coordinates, Mafs, Polygon, Text, Transform, vec, Vector } from "mafs";
 import styled from "styled-components";

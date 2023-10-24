@@ -4,7 +4,7 @@ import StandardPageWrapper from "@/components/StandardPageWrapper";
 import { Heading, Par } from "@/components/StyledSmalls";
 import TreeVisualization from "@/components/mafs/TreeVisualization";
 import { BREAKPOINTS, COLORS, SPACINGS, SPACINGS_INT } from "@/lib/constants";
-import { RandomTree } from "@/lib/encodings/randomTree";
+import { RandomTree } from "@/lib/structures/randomTree";
 import { useWindowWidth } from "@react-hook/window-size";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
@@ -18,7 +18,6 @@ export default function PlaygroundRandom() {
   const [randomTree, setRandomTree] = useState<any>(null);
 
   useEffect(() => {
-    // This part will only run on the client, avoiding the hydration issue.
     const newRandomTree = new RandomTree(maxChildren, maxLevels, seed * 127);
     setRandomTree(newRandomTree);
   }, [maxChildren, maxLevels, seed]);

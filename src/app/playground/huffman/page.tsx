@@ -5,8 +5,8 @@ import { Heading } from "@/components/StyledSmalls";
 import BoxBreakdown, { BoxBreakdownBox } from "@/components/mafs/BoxBreakdown";
 import TreeVisualization from "@/components/mafs/TreeVisualization";
 import { BREAKPOINTS } from "@/lib/constants";
-import StringToASCII from "@/lib/encodings/ascii";
-import { HuffmanTree } from "@/lib/encodings/huffman";
+import { StringToASCII } from "@/lib/structures/ascii";
+import { HuffmanTree } from "@/lib/structures/huffman";
 import { useWindowWidth } from "@react-hook/window-size";
 import { useState } from "react";
 

@@ -22,23 +22,9 @@ export abstract class TreeValue {
   abstract print(): string;
 
   /**
-   * Orders the current instance with another instance of the same type.
+   * Compares two nodes, returning true if they are logically equivalent.
    *
-   * The method should return "true" if the current instance is greater
-   * than the provided instance. Otherwise, it should return "false."
-   *
-   * Example:
-   *
-   * ```ts
-   * const v1 = new MyValue(5);
-   * const v2 = new MyValue(4);
-   * v1.order(v2); // Returns true because 5 > 4
-   * ```
-   */
-  abstract order(other: this): boolean;
-
-  /**
-   * Determines "equivalency" for determining if a tree contains a value.
+   * @param other A tree value of the same type to compare to
    */
   abstract equivalent(other: this): boolean;
 }
@@ -67,13 +53,17 @@ type locationMap<T extends TreeValue> = [string, T];
 export abstract class Tree<T extends TreeValue> {
   root: TreeNode<T> | null = null;
 
-  // TODO: Sparse methods for now, only implementing the needed parts as they come up.
-  // For now, this class mainly serves as simply "something that can hold a root of TreeNode<T>"
-  insert(value: T): void {
-    throw new Error("PENDING DEFAULT IMPLEMENTATION");
-  }
-
-  contains(value: T): void {
+  /**
+   * Checks if the tree contains a value.
+   *
+   * Because any tree structure may be at play, we must preform a full tree search.
+   *
+   * Extenders of Tree<T> are free to optimize this function to their specific case
+   * to achieve better runtime performance.
+   *
+   * @param value The value to check
+   */
+  contains(value: T): boolean {
     throw new Error("PENDING DEFAULT IMPLEMENTATION");
   }
 

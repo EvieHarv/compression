@@ -1,5 +1,5 @@
 import { COLORS } from "@/lib/constants";
-import { Tree, TreeNode, TreeValue } from "@/lib/encodings/tree";
+import { Tree, TreeNode, TreeValue } from "@/lib/structures/tree";
 import {
   Circle,
   Coordinates,
@@ -75,13 +75,21 @@ class VisValue<T extends TreeValue> extends TreeValue {
   y: number = 0;
   mod: number = 0;
   innerValue: T;
+  is_ghost: boolean = false; // used to strictly construct n_ary trees with consistent spacing.
 
-  constructor(innerValue: T, x: number = 0, y: number = 0, mod: number = 0) {
+  constructor(
+    innerValue: T,
+    x: number = 0,
+    y: number = 0,
+    mod: number = 0,
+    is_ghost: boolean = false,
+  ) {
     super();
     this.x = x;
     this.y = y;
     this.mod = mod; // Modifier - cascades added x-values down tree.
     this.innerValue = innerValue;
+    this.is_ghost = is_ghost;
   }
 
   print(): string {
@@ -409,6 +417,7 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
   rotate?: number;
   labelBranches?: boolean;
   highlightLeaves?: boolean;
+  n_ary?: number;
 }
 
 /**
@@ -431,6 +440,7 @@ export default function TreeVisualization<
   rotate = 0,
   labelBranches = false,
   highlightLeaves = true,
+  n_ary,
 }: Props<U, T>) {
   /**
    * Takes a single node and gets the properly-placed Mafs representation of it.

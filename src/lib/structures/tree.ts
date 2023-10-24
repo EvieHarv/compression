@@ -29,17 +29,14 @@ export abstract class TreeValue {
   abstract equivalent(other: this): boolean;
 }
 
-// Syntactic sugar
-type NodePtr<T extends TreeValue> = TreeNode<T>;
-
 /**
  * An individual node in a tree, with values of a certain type.
  */
 export class TreeNode<T extends TreeValue> {
   value: T;
-  children: NodePtr<T>[] = [];
+  children: TreeNode<T>[] = [];
 
-  constructor(value: T, children: NodePtr<T>[] | null = null) {
+  constructor(value: T, children: TreeNode<T>[] | null = null) {
     this.value = value;
     this.children = children ?? [];
   }

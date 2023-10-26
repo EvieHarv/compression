@@ -100,9 +100,9 @@ class VisValue<T extends TreeValue> extends TreeValue {
     return `${this.x} | ${this.y} | ${this.mod} | ${this.innerValue.print()}`;
   }
 
-  order(other: this) {
-    return this.x > other.x;
-  }
+  // order(other: this) {
+  //   return this.x > other.x;
+  // }
 
   equivalent(other: this): boolean {
     return this.x === other.x && this.y === other.y;
@@ -417,15 +417,23 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
   rotate?: number;
   labelBranches?: boolean;
   highlightLeaves?: boolean;
-  n_ary?: number;
+  hideNullBranches?: boolean;
 }
 
 /**
  * Visualizes anything implementing a Tree structure, using the
  * Reingold-Tilford algorithm for determining node positions.
  *
- * See Rachel Lim's wonderful article for implementation explanations:
+ * See Rachel Lim's article for a basic understanding of the implementation:
  * https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/
+ *
+ * However, that article does have some mistakes, and so this implementation attempts
+ * to improve upon those. Especially in the manner of centering and shifting subtrees.
+ *
+ * Please note that if `node.value.print()` returns `null`, the node and all of it's
+ * children will not be rendered, but positions in the tree will act as if it was.
+ * This can be useful in constructing strict n-ary trees with nodal positioning
+ * (see `lib/structures/bst.ts`).
  *
  * @param tree Any class implementing Tree.
  * @param rotate Rotates the tree around the origin (top-left corner), given in degrees.
@@ -440,7 +448,7 @@ export default function TreeVisualization<
   rotate = 0,
   labelBranches = false,
   highlightLeaves = true,
-  n_ary,
+  hideNullBranches = true,
 }: Props<U, T>) {
   /**
    * Takes a single node and gets the properly-placed Mafs representation of it.
@@ -448,9 +456,12 @@ export default function TreeVisualization<
    * @param node Tree Node
    * @returns A Mafs element with the node value printed inside
    */
-  const nodeToBox = (node: TreeNode<VisValue<U>>): JSX.Element => {
+  const nodeToBox = (node: TreeNode<VisValue<U>>): JSX.Element | null => {
     // TODO: Allow for coloring a node without gunking up the API
     //  on the TreeValue interface too much. Maybe apart of print()?
+    if (node.value.innerValue.print() === null) {
+      return null;
+    }
     return (
       <Transform key={node.value.getKey()}>
         <Circle
@@ -478,13 +489,21 @@ export default function TreeVisualization<
   const iterateTree = (node: TreeNode<VisValue<U>>): JSX.Element[] => {
     let arr: JSX.Element[] = [];
 
+    let box = nodeToBox(node);
+    if (box === null) {
+      return [];
+    }
+    arr.push(box);
+
     // Generate current node representation
-    arr.push(nodeToBox(node));
 
     // Iterate children.
     for (let i = 0; i < node.children.length; i++) {
       // Get the children's representations.
-      arr = arr.concat(iterateTree(node.children[i]));
+      let iterated = iterateTree(node.children[i]);
+      if (iterated.length === 0 && hideNullBranches) continue; // skip drawing line if null
+
+      arr = arr.concat(iterated);
 
       // Current node (top) and current child node (bottom)
       let topNode: vec.Vector2 = [node.value.x, node.value.y];

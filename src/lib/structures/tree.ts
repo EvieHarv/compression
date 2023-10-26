@@ -19,7 +19,7 @@ export abstract class TreeValue {
    * Primarily intended for visualization purposes,
    * and so should be end-user friendly.
    */
-  abstract print(): string;
+  abstract print(): string | null;
 
   /**
    * Compares two nodes, returning true if they are logically equivalent.
@@ -88,7 +88,35 @@ export abstract class Tree<T extends TreeValue> {
   }
 
   /**
-   * Throws all node values into a list. No guarentees made about order.
+   * Recursively finds the number of nodes in the tree, ignoring
+   * subtrees where node.value.print() returns null.
+   *
+   * @returns Number of nodes
+   */
+  sizeNoNull(): number {
+    if (this.root) return this.subtreeSizeNoNull(this.root);
+    else return 0;
+  }
+  /**
+   * Recursively finds the number of nodes in the subtree, ignoring
+   * subtrees where node.value.print() returns null.
+   *
+   * @param node Node to start from
+   * @returns Number of nodes in subtree
+   */
+  subtreeSizeNoNull(node: TreeNode<T>): number {
+    if (node.value.print() === null) return 0;
+    let num = 1;
+    for (let i = 0; i < node.children.length; i++) {
+      if (node.children[i].value.print() != null) {
+        num += this.subtreeSizeNoNull(node.children[i]);
+      }
+    }
+    return num;
+  }
+
+  /**
+   * Throws all node values into a list via pre-order traversal.
    *
    * @returns A list representing the tree values
    */

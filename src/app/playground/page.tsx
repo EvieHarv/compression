@@ -19,6 +19,9 @@ export default function PlaygroundHome() {
         <li>
           - <StyledLink href="/playground/random">randomized tree</StyledLink>
         </li>
+        <li>
+          - <StyledLink href="/playground/bst">binary search tree</StyledLink>
+        </li>
       </ul>
     </StandardPageWrapper>
   );

@@ -17,9 +17,9 @@ export class Huffman extends TreeValue {
     return `${this.count}${this.char ? `|${this.char}` : ""}`;
   }
 
-  order(other: this) {
-    return this.count > other.count;
-  }
+  // order(other: this) {
+  //   return this.count > other.count;
+  // }
 
   equivalent(other: this): boolean {
     return this.count === other.count && this.char === other.char;

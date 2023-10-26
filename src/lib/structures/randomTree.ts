@@ -31,9 +31,6 @@ export class RandomTreeValue extends TreeValue {
     return "";
     // return `${this.level}|${this.index}`;
   }
-  order(other: this): boolean {
-    throw new Error("Method not implemented.");
-  }
   equivalent(other: this): boolean {
     throw new Error("Method not implemented.");
   }

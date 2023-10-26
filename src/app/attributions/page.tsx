@@ -10,7 +10,7 @@ export default function AttributionsPage() {
       <hr />
       <Par>- nextjs</Par>
       <Par>- mafs</Par>
-      <Par>- fabiensanglard.net for style</Par>
+      <Par>- fabiensanglard.net i absolutely stole the style</Par>
     </StandardPageWrapper>
   );
 }

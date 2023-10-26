@@ -1,9 +1,11 @@
 // styledComponents.js
-import { FONT_SIZE, WEIGHTS } from "@/lib/constants";
+import { FONT_SIZE, SPACINGS, SPACINGS_INT, WEIGHTS } from "@/lib/constants";
 import Link from "next/link";
 import styled from "styled-components";
 
-export const Par = styled.p``;
+export const Par = styled.p`
+  margin-bottom: ${SPACINGS_INT.padding / 2}px;
+`;
 
 export const Heading = styled.h1`
   font-weight: ${WEIGHTS.bold};

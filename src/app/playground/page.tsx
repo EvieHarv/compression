@@ -22,6 +22,9 @@ export default function PlaygroundHome() {
         <li>
           - <StyledLink href="/playground/bst">binary search tree</StyledLink>
         </li>
+        <li>
+          - <StyledLink href="/playground/ui">ui</StyledLink>
+        </li>
       </ul>
     </StandardPageWrapper>
   );

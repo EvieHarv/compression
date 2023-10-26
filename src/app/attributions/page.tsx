@@ -10,6 +10,7 @@ export default function AttributionsPage() {
       <hr />
       <Par>- nextjs</Par>
       <Par>- mafs</Par>
+      <Par>- react-tooltip</Par>
       <Par>- fabiensanglard.net i absolutely stole the style</Par>
     </StandardPageWrapper>
   );

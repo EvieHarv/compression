@@ -23,7 +23,7 @@ export default function PlaygroundBST() {
 
   return (
     <StandardPageWrapper>
-      <Heading>~ ✨ Random Tree ✨ ~</Heading>
+      <Heading>~ ✨ Binary Search Tree ✨ ~</Heading>
       <hr />
       <Par>
         <Button onClick={() => setShowBranches((v) => !v)}>

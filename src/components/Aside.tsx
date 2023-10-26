@@ -1,6 +1,6 @@
 "use client";
 
-import { COLORS, WEIGHTS } from "@/lib/constants";
+import { COLORS, FONT_SIZE, WEIGHTS } from "@/lib/constants";
 import { ReactNode, useId } from "react";
 import { Tooltip } from "react-tooltip";
 import styled from "styled-components";
@@ -32,4 +32,6 @@ const Span = styled.span`
 const AstriskStyle = styled.span`
   color: ${COLORS.primary};
   font-weight: ${WEIGHTS.bold};
+  display: inline-block;
+  transform: translateY(-5px);
 `;

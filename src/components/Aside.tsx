@@ -19,19 +19,25 @@ export default function Aside({
   return (
     <Span>
       <a data-tooltip-id={id}>{marker}</a>
-      <Tooltip id={id}>{children}</Tooltip>
+      <Tooltip id={id}>
+        <DefaultContentWrapper>{children}</DefaultContentWrapper>
+      </Tooltip>
     </Span>
   );
 }
 
 const Span = styled.span`
-  display: inline-block;
+  display: inline;
   margin-right: 2px;
 `;
 
 const AstriskStyle = styled.span`
   color: ${COLORS.primary};
   font-weight: ${WEIGHTS.bold};
-  display: inline-block;
+  display: inline;
   transform: translateY(-5px);
+`;
+
+const DefaultContentWrapper = styled.p`
+  max-width: 35ch;
 `;

@@ -12,11 +12,14 @@ import styled from "styled-components";
 
 export default function IntroductionPage() {
   const defaultText = "aaAH! computers!";
-  const [text, updateText] = useState("");
+  const [text, updateText] = useState<string | null>(null);
 
-  let asciiBoxes = text
-    .split("")
-    .map((char) => new BoxBreakdownBox(char, StringToASCII(char)));
+  let asciiBoxes: BoxBreakdownBox[] = [];
+
+  if (text)
+    asciiBoxes = text
+      .split("")
+      .map((char) => new BoxBreakdownBox(char, StringToASCII(char)));
 
   useEffect(() => {
     console.log("yea");
@@ -31,7 +34,7 @@ export default function IntroductionPage() {
         Imagine you have some text that you want inside ~a computer~, such as
         the following:
       </Par>
-      <QuoteBox>{defaultText}</QuoteBox>
+      <QuoteBox>{text === null ? defaultText : text}</QuoteBox>
       <Par>
         This is complicated by the fact that computers aren't very smart don't
         know what letters are.
@@ -157,24 +160,30 @@ export default function IntroductionPage() {
           </tbody>
         </STable>
       </TWrap>
-      <Par>
-        So, using ASCII, our text from earlier becomes:{" "}
-        <ILCode>
-          {StringToASCII(text) === "" ? "_" : StringToASCII(text)}
-        </ILCode>{" "}
-        or written out a little more clearly,
-      </Par>
+      <Par>So, using ASCII, our text from earlier becomes: </Par>
+      <QuoteBox>
+        <TextCenter>
+          {text}
+          <br />=<br />
+          <ILCode>
+            {StringToASCII(text ?? "") === ""
+              ? "\u200B"
+              : StringToASCII(text ?? "")}
+          </ILCode>{" "}
+        </TextCenter>
+      </QuoteBox>
+      <Par>or written out a little more clearly,</Par>
       <BoxBreakdown input={asciiBoxes} />
       <Par>
         That's it! We've successfully taken some text and converted it to binary
         using ASCII encoding. You're now ready to move on to{" "}
         <StyledLink href="/huffman">Huffman Coding</StyledLink>, which packs
-        everything a bit tighter. You can also feel free to stick around and
-        play around with ASCII by changing the text displayed above:
+        everything a bit tighter. You can also play around with ASCII by
+        changing the text displayed above:
       </Par>
       <input
         type="text"
-        value={text}
+        value={text ?? ""}
         onChange={(e) => updateText(e.target.value)}
       ></input>
     </StandardPageWrapper>
@@ -204,4 +213,8 @@ const Th = styled.th`
 const Td = styled.td`
   border: 1px solid ${COLORS.text};
   padding: ${SPACINGS_INT.padding / 2}px;
+`;
+
+const TextCenter = styled.div`
+  text-align: center;
 `;

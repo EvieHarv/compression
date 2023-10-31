@@ -40,4 +40,5 @@ const AstriskStyle = styled.span`
 
 const DefaultContentWrapper = styled.p`
   max-width: 35ch;
+  text-align: center;
 `;

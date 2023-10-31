@@ -3,9 +3,26 @@
 import Aside from "@/components/Aside";
 import QuoteBox from "@/components/QuoteBox";
 import StandardPageWrapper from "@/components/StandardPageWrapper";
-import { Heading, Par } from "@/components/StyledSmalls";
+import { Heading, ILCode, Par, StyledLink } from "@/components/StyledSmalls";
+import BoxBreakdown, { BoxBreakdownBox } from "@/components/mafs/BoxBreakdown";
+import { COLORS, SPACINGS, SPACINGS_INT } from "@/lib/constants";
+import { StringToASCII } from "@/lib/structures/ascii";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 export default function IntroductionPage() {
+  const defaultText = "aaAH! computers!";
+  const [text, updateText] = useState("");
+
+  let asciiBoxes = text
+    .split("")
+    .map((char) => new BoxBreakdownBox(char, StringToASCII(char)));
+
+  useEffect(() => {
+    console.log("yea");
+    updateText(defaultText);
+  }, []);
+
   return (
     <StandardPageWrapper>
       <Heading>ASCII</Heading>
@@ -14,57 +31,177 @@ export default function IntroductionPage() {
         Imagine you have some text that you want inside ~a computer~, such as
         the following:
       </Par>
-      <QuoteBox>
-        (TODO: choose something vaguely funny but not distracting)
-        <Par>candidates:</Par>
-        <ul>
-          <li>- as per my last email, no.</li>
-          <li>- oh boy this is some beautiful text</li>
-          <li>- the following</li>
-          <li>- i read this article, and all i got was this stupid quote</li>
-          <li>
-            - we've been trying to reach you about your car's extended warranty
-          </li>
-          <li>
-            - we've been trying to reach you about your text's extended warranty
-          </li>
-          <li>- hi computer!</li>
-          <li>
-            - Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            Suspendisse, iaculis quis help I am stuck in a word factory
-            tincidunt fringilla. Sed congue massa commodo ex blandit, nec auctor
-            ipsum ultrices.
-          </li>
-        </ul>
-      </QuoteBox>
+      <QuoteBox>{defaultText}</QuoteBox>
       <Par>
-        This is complicated by the fact that computers don't know what a word or
-        a letter is.
+        This is complicated by the fact that computers aren't very smart don't
+        know what letters are.
       </Par>
       <br />
       <Par>
-        As you may have heard, all digital information is stored as a series of
-        0s and 1s (known as binary). In order to store and display text on a
-        computer, we have to somehow convert all of our complicated letters and
-        symbols into binary.
+        All digital information must eventually be stored as a series of{" "}
+        <ILCode>0</ILCode>s and <ILCode>1</ILCode>s. This is known as binary,
+        with each <ILCode>0</ILCode> or <ILCode>1</ILCode> being a "bit." In
+        order to store and display text, we have to somehow convert all of our
+        complicated human symbols into binary.
       </Par>
       <Par>
-        We call this process <i>encoding</i>. At a base level, we may roughly
-        say encoding is "taking information stored in one format, and turning it
-        into another." There are essentially an infinite number of ways to do
-        that, and computer scientists absolutely love to argue about them.
+        We call this process <i>encoding</i>. Roughly, we may say encoding is
+        "taking information stored in one format, and turning it into another."
+        There are essentially an infinite number of ways to do that, and
+        computer scientists spend a lot of time arguing about them.
       </Par>
       <br />
       <Par>
-        For standard, basic English text, ASCII
-        <Aside>American Standard Code for Information Interchange</Aside> is a
-        widely recognized and important encoding. It's mainly important for
-        historical reasons and certainly has its quirks, but we'll pretend it's
-        perfect for now.
+        It's important to recognize that there's a somewhat fundamental obstacle
+        with representing things in binary—there are no spaces to seperate
+        things! Say for instance you started writing out the alphabet like this,
+        counting up in binary:
+      </Par>
+      <TWrap>
+        <STable>
+          <thead>
+            <tr>
+              <Th>Letter</Th>
+              <Th>Code</Th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <Td>a</Td>
+              <Td>0</Td>
+            </tr>
+            <tr>
+              <Td>b</Td>
+              <Td>1</Td>
+            </tr>
+            <tr>
+              <Td>c</Td>
+              <Td>10</Td>
+            </tr>
+            <tr>
+              <Td>...</Td>
+              <Td>...</Td>
+            </tr>
+          </tbody>
+        </STable>
+      </TWrap>
+      <Par>
+        This starts to work, for instance if we just see a <ILCode>1</ILCode>{" "}
+        that's clearly <ILCode>b</ILCode>, and just a <ILCode>0</ILCode> is{" "}
+        <ILCode>a</ILCode>, but what about <ILCode>10</ILCode>? Does that mean{" "}
+        <ILCode>ba</ILCode> or <ILCode>c</ILCode>? We aren't allowed to do
+        something like <ILCode>1 0 10 = bac</ILCode>, it has to all be in one
+        long line like <ILCode>1010</ILCode>.
+      </Par>
+      <br />
+      <Par>
+        This introduces us to two fundamental questions any text encoding must
+        answer:
+      </Par>
+      <ul>
+        <li>- Can I represent every letter uniquely?</li>
+        <li>- Can I tell where one letter ends and another begins?</li>
+      </ul>
+      <br />
+      <Par>
+        <i>ASCII</i>
+        <Aside>"American Standard Code for Information Interchange"</Aside> is a
+        simple and widely recognized English text
+        <Aside>Latin Alphabet, really.</Aside> encoding that fits these
+        requirements. It's old and has some historic quirks, but for now we'll
+        pretend it's perfect.
       </Par>
       <Par>
-        A benefit of ASCII is its pure <i>simplicity</i>.
+        It solves our problem in the most straightfoward way: just make
+        everything the exact same size. It turns out that if we use 7 bits per
+        character, we can represent all uppercase and lowercase letters, along
+        with some important extras like spaces, punctuation, and special
+        characters.
       </Par>
+      <Par>
+        For ~computer science reasons~
+        <Aside>
+          We like when things are aligned to powers of 2, because it's easy to
+          represent powers of 2 in binary.
+        </Aside>
+        , we usually add another <ILCode>0</ILCode> to the beginning to bring
+        this up to a nice even 8 bits. So, to find where one letter begins and
+        another ends in our long string of binary, we can simply go forward and
+        backward 8 bits and we'll always land on a clean boundary.
+      </Par>
+      <TWrap>
+        <STable>
+          <thead>
+            <tr>
+              <Th>Letter</Th>
+              <Th>Code</Th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <Td>a</Td>
+              <Td>01100001</Td>
+            </tr>
+            <tr>
+              <Td>b</Td>
+              <Td>01100010</Td>
+            </tr>
+            <tr>
+              <Td>c</Td>
+              <Td>01100011</Td>
+            </tr>
+            <tr>
+              <Td>...</Td>
+              <Td>...</Td>
+            </tr>
+          </tbody>
+        </STable>
+      </TWrap>
+      <Par>
+        So, using ASCII, our text from earlier becomes:{" "}
+        <ILCode>
+          {StringToASCII(text) === "" ? "_" : StringToASCII(text)}
+        </ILCode>{" "}
+        or written out a little more clearly,
+      </Par>
+      <BoxBreakdown input={asciiBoxes} />
+      <Par>
+        That's it! We've successfully taken some text and converted it to binary
+        using ASCII encoding. You're now ready to move on to{" "}
+        <StyledLink href="/huffman">Huffman Coding</StyledLink>, which packs
+        everything a bit tighter. You can also feel free to stick around and
+        play around with ASCII by changing the text displayed above:
+      </Par>
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => updateText(e.target.value)}
+      ></input>
     </StandardPageWrapper>
   );
 }
+
+const TWrap = styled.div`
+  width: 100%;
+  display: grid;
+  place-content: center;
+
+  margin: ${SPACINGS.padding};
+`;
+
+const STable = styled.table`
+  border: 1px solid ${COLORS.text};
+  border-collapse: collapse;
+
+  text-align: center;
+`;
+
+const Th = styled.th`
+  border: 1px solid ${COLORS.text};
+  padding: ${SPACINGS_INT.padding / 2}px;
+`;
+
+const Td = styled.td`
+  border: 1px solid ${COLORS.text};
+  padding: ${SPACINGS_INT.padding / 2}px;
+`;

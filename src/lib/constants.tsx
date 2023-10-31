@@ -1,13 +1,13 @@
 export const COLOR_CODES = {
-  text: "34deg 20% 5%",
-  text_light: "34deg 3% 50%",
-  background: "60deg 20% 95%",
-  card: "202deg 65% 10%",
-  card_light: "202deg 65% 12%",
-  primary: "289deg 88% 31%",
-  primary_dark: "212deg 64% 31%",
-  secondary: "300deg 27% 86%",
-  accent: "240deg 27% 46%",
+  text: "34deg, 20%, 5%",
+  text_light: "34deg, 3%, 50%",
+  background: "60deg, 20%, 95%",
+  card: "202deg, 65%, 10%",
+  card_light: "202deg, 65%, 12%",
+  primary: "289deg, 88%, 31%",
+  primary_dark: "212deg, 64%, 31%",
+  secondary: "300deg, 27%, 86%",
+  accent: "240deg, 27%, 46%",
 };
 
 export const COLORS = {

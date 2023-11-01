@@ -36,8 +36,8 @@ export default function IntroductionPage() {
       </Par>
       <QuoteBox>{text === null ? defaultText : text}</QuoteBox>
       <Par>
-        This is complicated by the fact that computers aren't very smart don't
-        know what letters are.
+        This is complicated by the fact that computers aren't very smart and
+        don't know what letters are.
       </Par>
       <br />
       <Par>
@@ -56,7 +56,7 @@ export default function IntroductionPage() {
       <br />
       <Par>
         It's important to recognize that there's a somewhat fundamental obstacle
-        with representing things in binary—there are no spaces to seperate
+        with representing things in binary—there are no spaces to separate
         things! Say for instance you started writing out the alphabet like this,
         counting up in binary:
       </Par>
@@ -115,7 +115,7 @@ export default function IntroductionPage() {
         pretend it's perfect.
       </Par>
       <Par>
-        It solves our problem in the most straightfoward way: just make
+        It solves our problem in the most straightforward way: just make
         everything the exact same size. It turns out that if we use 7 bits per
         character, we can represent all uppercase and lowercase letters, along
         with some important extras like spaces, punctuation, and special

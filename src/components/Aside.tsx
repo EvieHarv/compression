@@ -12,7 +12,7 @@ interface Props {
 
 export default function Aside({
   children,
-  marker = <AstriskStyle>*</AstriskStyle>,
+  marker = <AsteriskStyle>*</AsteriskStyle>,
 }: Props) {
   const id = useId();
 
@@ -31,11 +31,11 @@ const Span = styled.span`
   margin-right: 2px;
 `;
 
-const AstriskStyle = styled.span`
+const AsteriskStyle = styled.span`
   color: ${COLORS.primary};
   font-weight: ${WEIGHTS.bold};
-  display: inline;
-  transform: translateY(-5px);
+  display: inline-block;
+  transform: translateY(-3px);
 `;
 
 const DefaultContentWrapper = styled.p`

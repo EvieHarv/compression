@@ -294,8 +294,12 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
 
         let desiredX = leftNode.value.x + distanceBetweenNodes * count;
         let offset = desiredX - middleNode.value.x;
-        middleNode.value.x += offset;
-        middleNode.value.mod += offset;
+
+        // Hacky temp solution—better to do via contours instead.
+        if (middleNode.children.length === 0) {
+          middleNode.value.x += offset;
+          middleNode.value.mod += offset;
+        }
 
         count++;
         this.shiftConflicts(parent, i);

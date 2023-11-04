@@ -1,5 +1,5 @@
 import { COLORS } from "@/lib/constants";
-import { Tree, TreeNode, TreeValue } from "@/lib/structures/tree";
+import { Tree, TreeNode, TreeValue, locationMap } from "@/lib/structures/tree";
 import {
   Circle,
   Coordinates,
@@ -18,7 +18,7 @@ import { styled } from "styled-components";
  */
 const NODE_SIZE = 2; // Size of each node.
 const NODE_SIBLING_DIST = 0.5; // Spacing between sibling nodes
-const TREE_SPACING = NODE_SIBLING_DIST * 2; // Spacing between seperated tree segments
+const TREE_SPACING = NODE_SIBLING_DIST * 2; // Spacing between separated tree segments
 const VERTICAL_SPACING = -3.5; // How far in the y direction nodes are moved at each level
 const BRANCH_TEXT_VERT = 0.3; // How far to move branch numbers up (if displayed)
 const BRANCH_TEXT_HORIZ = 0.3; // How far to move branch numbers to the side (if displayed)
@@ -68,7 +68,7 @@ type contourMap = { [key: number]: number };
  * Supporting value type for tree visualization.
  *
  * Wraps an inner value (the actual tree type) along with
- * position values for x, y, and a recursive x-modifer.
+ * position values for x, y, and a recursive x-modifier.
  */
 class VisValue<T extends TreeValue> extends TreeValue {
   x: number = 0;
@@ -110,7 +110,7 @@ class VisValue<T extends TreeValue> extends TreeValue {
 }
 
 /**
- * Tree that tacks on special positional arguments used for visualzation, and calculates positions.
+ * Tree that tacks on special positional arguments used for visualization, and calculates positions.
  *
  * Basically "shadows" the actual tree of inspection—has the same inner values, but with
  * additional properties for positioning.
@@ -189,7 +189,7 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
     if (index > 0 && parent) {
       prevSiblingX = parent.children[index - 1].value.x;
     }
-    // Assign intial position
+    // Assign initial position
     node.value.x = prevSiblingX + NODE_SIZE + NODE_SIBLING_DIST;
     node.value.y = level;
 
@@ -384,7 +384,7 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
       this.recurseApplyMods(node.children[i], sumMods + node.value.mod);
     }
     node.value.x += sumMods;
-    // We apply verticle spacing here instead of when we originally assign it
+    // We apply vertical spacing here instead of when we originally assign it
     // because it's more nice to have simple y-levels for the math along the way.
     node.value.y *= VERTICAL_SPACING;
   }
@@ -421,6 +421,8 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
   rotate?: number;
   labelBranches?: boolean;
   highlightLeaves?: boolean;
+  highlightPaths?: Array<number[]>;
+  highlightNodes?: Array<number[]>;
   hideNullBranches?: boolean;
 }
 
@@ -428,7 +430,7 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
  * Visualizes anything implementing a Tree structure, using the
  * Reingold-Tilford algorithm for determining node positions.
  *
- * See Rachel Lim's article for a basic understanding of the implementation:
+ * See Rachel Lim's wonderful article for a basic understanding of the implementation:
  * https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/
  *
  * However, that article does have some mistakes, and so this implementation attempts
@@ -443,6 +445,10 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
  * @param rotate Rotates the tree around the origin (top-left corner), given in degrees.
  * @param labelBranches Toggles if branches of a node are labeled with a number,
  *        0 at the leftmost branch and counting up.
+ * @param highlightLeaves Automatically highlights all tree leaves.
+ * @param highlightPaths Highlights every node and branch in an indexed path.
+ * @param highlightNodes Highlights every final node in an indexed path.
+ * @param hideNullBranches Hides the branches to "nowhere" going to null nodes.
  */
 export default function TreeVisualization<
   U extends TreeValue,
@@ -452,6 +458,8 @@ export default function TreeVisualization<
   rotate = 0,
   labelBranches = false,
   highlightLeaves = true,
+  highlightPaths = [],
+  highlightNodes = [],
   hideNullBranches = true,
 }: Props<U, T>) {
   /**
@@ -460,22 +468,27 @@ export default function TreeVisualization<
    * @param node Tree Node
    * @returns A Mafs element with the node value printed inside
    */
-  const nodeToBox = (node: TreeNode<VisValue<U>>): JSX.Element | null => {
+  const nodeToBox = (
+    node: TreeNode<VisValue<U>>,
+    location: number[],
+  ): JSX.Element | null => {
     // TODO: Allow for coloring a node without gunking up the API
     //  on the TreeValue interface too much. Maybe apart of print()?
     if (node.value.innerValue.print() === null) {
       return null;
     }
+
+    const highlightNode =
+      (highlightLeaves && node.children.length === 0) ||
+      locationMap.doIndicesContain(highlightNodes, location) ||
+      locationMap.doIndicesContainStartingWith(highlightPaths, location);
+
     return (
       <Transform key={node.value.getKey()}>
         <Circle
           center={[node.value.x, node.value.y]}
           radius={NODE_SIZE / 2}
-          color={
-            highlightLeaves && node.children.length === 0
-              ? "#00AA00"
-              : "#000000"
-          }
+          color={highlightNode ? "#00AA00" : "#000000"}
         ></Circle>
         <Text x={node.value.x} y={node.value.y} size={textSize}>
           {node.value.innerValue.print()}
@@ -490,10 +503,13 @@ export default function TreeVisualization<
    * @param node Tree Node
    * @returns All sublevels of this node represented as Mafs elements
    */
-  const iterateTree = (node: TreeNode<VisValue<U>>): JSX.Element[] => {
+  const iterateTree = (
+    node: TreeNode<VisValue<U>>,
+    location: number[] = [],
+  ): JSX.Element[] => {
     let arr: JSX.Element[] = [];
 
-    let box = nodeToBox(node);
+    let box = nodeToBox(node, location);
     if (box === null) {
       return [];
     }
@@ -504,8 +520,15 @@ export default function TreeVisualization<
     // Iterate children.
     for (let i = 0; i < node.children.length; i++) {
       // Get the children's representations.
-      let iterated = iterateTree(node.children[i]);
-      if (iterated.length === 0 && hideNullBranches) continue; // skip drawing line if null
+      let iterated = iterateTree(node.children[i], [...location, i]);
+
+      // skip drawing branch lines for null node
+      if (iterated.length === 0 && hideNullBranches) continue;
+
+      const highlightBranch = locationMap.doIndicesContainStartingWith(
+        highlightPaths,
+        [...location, i],
+      );
 
       arr = arr.concat(iterated);
 
@@ -522,6 +545,7 @@ export default function TreeVisualization<
           key={node.value.getKey() + node.children[i].value.getKey() + "line"}
           point1={[topNode[0], topNode[1] - 1]}
           point2={[bottomNode[0], bottomNode[1] + 1]}
+          color={highlightBranch ? "#00AA00" : "#000000"}
         ></Line.Segment>,
       );
 
@@ -560,7 +584,7 @@ export default function TreeVisualization<
     return arr;
   };
 
-  // Generate our tree and positons, grab final bounds.
+  // Generate our tree and positions, grab final bounds.
   let visTree = new VisTree(tree);
   visTree.calculatePositions();
   const bounds = visTree.getBounds();

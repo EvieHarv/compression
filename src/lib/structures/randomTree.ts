@@ -29,7 +29,7 @@ export class RandomTreeValue extends TreeValue {
 
   print(): string {
     return "";
-    // return `${this.level}|${this.index}`;
+    // return `${this.index}`;
   }
   equivalent(other: this): boolean {
     throw new Error("Method not implemented.");

@@ -42,7 +42,43 @@ export class TreeNode<T extends TreeValue> {
   }
 }
 
-type locationMap<T extends TreeValue> = [string, T];
+export class locationMap<T extends TreeValue> {
+  /**
+   * Create a single location map entry
+   */
+  constructor(
+    public indices: number[],
+    public value: T,
+  ) {}
+
+  static getMapsIndices<T extends TreeValue>(
+    maps: locationMap<T>[],
+  ): Array<number[]> {
+    return maps.map((map) => map.indices);
+  }
+
+  static doIndicesContain(
+    indices: Array<number[]>,
+    contain: number[],
+  ): boolean {
+    return indices.some(
+      (innerArray) =>
+        innerArray.length === contain.length &&
+        innerArray.every((value, index) => value === contain[index]),
+    );
+  }
+
+  static doIndicesContainStartingWith(
+    indices: Array<number[]>,
+    contain: number[],
+  ): boolean {
+    return indices.some((innerArray) =>
+      JSON.stringify(innerArray).startsWith(
+        JSON.stringify(contain).replace("]", ""),
+      ),
+    );
+  }
+}
 
 /**
  * A simple, bare-bones abstract interface for a tree.
@@ -137,7 +173,11 @@ export abstract class Tree<T extends TreeValue> {
   }
 
   /**
-   * Maps the location of a node via tree indicies.
+   * Generates a list of all nodes,
+   * matching an indexed path with it's value.
+   *
+   * E.g. in a simple binary tree, `[[0,0,1], SomeValue()]`
+   * means the value is at left-left-right (`root.children[0].children[0].children[1]`).
    *
    * @returns A location map with corresponding values.
    */
@@ -147,15 +187,15 @@ export abstract class Tree<T extends TreeValue> {
   }
   private recurseLocationMap(
     node: TreeNode<T>,
-    location: string = "",
+    location: number[] = [],
   ): locationMap<T>[] {
     let arr: locationMap<T>[] = [];
 
-    arr.push([location, node.value]);
+    arr.push(new locationMap([...location], node.value));
 
     for (let i = 0; i < node.children.length; i++) {
       arr = arr.concat(
-        this.recurseLocationMap(node.children[i], location + i.toString()),
+        this.recurseLocationMap(node.children[i], [...location, i]),
       );
     }
 

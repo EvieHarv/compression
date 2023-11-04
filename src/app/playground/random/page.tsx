@@ -15,7 +15,7 @@ export default function PlaygroundRandom() {
   const [maxLevels, setMaxLevels] = useState(6);
   const [seed, setSeed] = useState(22321422);
 
-  const [randomTree, setRandomTree] = useState<any>(null);
+  const [randomTree, setRandomTree] = useState<RandomTree | null>(null);
 
   useEffect(() => {
     const newRandomTree = new RandomTree(maxChildren, maxLevels, seed * 127);

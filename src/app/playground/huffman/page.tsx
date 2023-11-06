@@ -1,7 +1,7 @@
 "use client";
 
 import StandardPageWrapper from "@/components/StandardPageWrapper";
-import { Heading } from "@/components/StyledSmalls";
+import { Heading, ILCode } from "@/components/StyledSmalls";
 import BoxBreakdown, { BoxBreakdownBox } from "@/components/mafs/BoxBreakdown";
 import TreeVisualization from "@/components/mafs/TreeVisualization";
 import { BREAKPOINTS } from "@/lib/constants";
@@ -53,14 +53,17 @@ export default function PlaygroundHuffman() {
       {encoded.length} bits - {encoded}
       <BoxBreakdown input={huffmanBoxes} />
       <Heading>
-        Using tree (for demonstration, highlighting the path to "h" &
-        highlighting individual "e" node if they exist)
+        Using tree (for testing, highlighting the path to "h" if it exists,
+        highlighting individual "e" node if it exists, and highlighting the
+        whole subtree starting at [1, 1, 0] if it exists) (try the string{" "}
+        <ILCode>1234567890[];'./----e+hh</ILCode> for a good example)
       </Heading>
       <TreeVisualization
         tree={tree}
         rotate={screenWidth <= BREAKPOINTS.phone ? 90 : 0}
         labelBranches={true}
         highlightLeaves={false}
+        highlightSubtrees={[[1, 1, 0]]} // Should highlight right side
         highlightPaths={h_location}
         highlightNodes={e_location}
       />

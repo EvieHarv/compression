@@ -421,6 +421,7 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
   rotate?: number;
   labelBranches?: boolean;
   highlightLeaves?: boolean;
+  highlightSubtrees?: Array<number[]>;
   highlightPaths?: Array<number[]>;
   highlightNodes?: Array<number[]>;
   hideNullBranches?: boolean;
@@ -446,8 +447,9 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
  * @param labelBranches Toggles if branches of a node are labeled with a number,
  *        0 at the leftmost branch and counting up.
  * @param highlightLeaves Automatically highlights all tree leaves.
- * @param highlightPaths Highlights every node and branch in an indexed path.
- * @param highlightNodes Highlights every final node in an indexed path.
+ * @param highlightSubtrees Highlights every subtree of a node given by an indexed path.
+ * @param highlightPaths Highlights every node and branch up to the final node in an indexed path.
+ * @param highlightNodes Highlights a node given by an indexed path.
  * @param hideNullBranches Hides the branches to "nowhere" going to null nodes.
  */
 export default function TreeVisualization<
@@ -458,6 +460,7 @@ export default function TreeVisualization<
   rotate = 0,
   labelBranches = false,
   highlightLeaves = true,
+  highlightSubtrees = [],
   highlightPaths = [],
   highlightNodes = [],
   hideNullBranches = true,
@@ -481,7 +484,8 @@ export default function TreeVisualization<
     const highlightNode =
       (highlightLeaves && node.children.length === 0) ||
       locationMap.doIndicesContain(highlightNodes, location) ||
-      locationMap.doIndicesContainStartingWith(highlightPaths, location);
+      locationMap.doIndicesContainStartingWith(highlightPaths, location) ||
+      locationMap.areIndicesSubtreeOf(highlightSubtrees, location);
 
     return (
       <Transform key={node.value.getKey()}>
@@ -519,16 +523,18 @@ export default function TreeVisualization<
 
     // Iterate children.
     for (let i = 0; i < node.children.length; i++) {
+      const childLocation = [...location, i];
       // Get the children's representations.
-      let iterated = iterateTree(node.children[i], [...location, i]);
+      let iterated = iterateTree(node.children[i], childLocation);
 
       // skip drawing branch lines for null node
       if (iterated.length === 0 && hideNullBranches) continue;
 
-      const highlightBranch = locationMap.doIndicesContainStartingWith(
-        highlightPaths,
-        [...location, i],
-      );
+      const highlightBranch =
+        locationMap.doIndicesContainStartingWith(
+          highlightPaths,
+          childLocation,
+        ) || locationMap.areIndicesSubtreeOf(highlightSubtrees, location);
 
       arr = arr.concat(iterated);
 

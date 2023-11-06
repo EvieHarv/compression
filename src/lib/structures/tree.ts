@@ -78,6 +78,17 @@ export class locationMap<T extends TreeValue> {
       ),
     );
   }
+
+  static areIndicesSubtreeOf(
+    indices: Array<number[]>,
+    contain: number[],
+  ): boolean {
+    return indices.some((innerArray) =>
+      JSON.stringify(contain).startsWith(
+        JSON.stringify(innerArray).replace("]", ""),
+      ),
+    );
+  }
 }
 
 /**

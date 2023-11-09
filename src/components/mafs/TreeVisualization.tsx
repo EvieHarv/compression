@@ -444,10 +444,10 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
  *
  * @param tree Any class implementing Tree.
  * @param rotate Rotates the tree around the origin (top-left corner), given in degrees.
- * @param labelBranches Toggles if branches of a node are labeled with a number,
+ * @param labelBranches Toggles if branches are labeled with a number,
  *        0 at the leftmost branch and counting up.
  * @param highlightLeaves Automatically highlights all tree leaves.
- * @param highlightSubtrees Highlights every subtree of a node given by an indexed path.
+ * @param highlightSubtrees Highlights the entire subtree of a node given by an indexed path.
  * @param highlightPaths Highlights every node and branch up to the final node in an indexed path.
  * @param highlightNodes Highlights a node given by an indexed path.
  * @param hideNullBranches Hides the branches to "nowhere" going to null nodes.

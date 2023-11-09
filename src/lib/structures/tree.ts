@@ -42,6 +42,9 @@ export class TreeNode<T extends TreeValue> {
   }
 }
 
+/**
+ * Helper class for building and comparing location maps.
+ */
 export class locationMap<T extends TreeValue> {
   /**
    * Create a single location map entry

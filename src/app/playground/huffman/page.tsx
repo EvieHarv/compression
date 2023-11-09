@@ -56,7 +56,7 @@ export default function PlaygroundHuffman() {
         Using tree (for testing, highlighting the path to "h" if it exists,
         highlighting individual "e" node if it exists, and highlighting the
         whole subtree starting at [1, 1, 0] if it exists) (try the string{" "}
-        <ILCode>1234567890[];'./----e+hh</ILCode> for a good example)
+        <ILCode>32_Qz3wxt4eryctuvyibuhbki</ILCode> for a good example)
       </Heading>
       <TreeVisualization
         tree={tree}

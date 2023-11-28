@@ -427,35 +427,7 @@ interface Props<U extends TreeValue, T extends Tree<U>> {
   hideNullBranches?: boolean;
 }
 
-/**
- * Visualizes anything implementing a Tree structure, using the
- * Reingold-Tilford algorithm for determining node positions.
- *
- * See Rachel Lim's wonderful article for a basic understanding of the implementation:
- * https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/
- *
- * However, that article does have some mistakes, and so this implementation attempts
- * to improve upon those. Especially in the manner of centering and shifting subtrees.
- *
- * Please note that if `node.value.print()` returns `null`, the node and all of it's
- * children will not be rendered, but positions in the tree will act as if it was.
- * This can be useful in constructing strict n-ary trees with nodal positioning
- * (see `lib/structures/bst.ts`).
- *
- * @param tree Any class implementing Tree.
- * @param rotate Rotates the tree around the origin (top-left corner), given in degrees.
- * @param labelBranches Toggles if branches are labeled with a number,
- *        0 at the leftmost branch and counting up.
- * @param highlightLeaves Automatically highlights all tree leaves.
- * @param highlightSubtrees Highlights the entire subtree of a node given by an indexed path.
- * @param highlightPaths Highlights every node and branch up to the final node in an indexed path.
- * @param highlightNodes Highlights a node given by an indexed path.
- * @param hideNullBranches Hides the branches to "nowhere" going to null nodes.
- */
-export default function TreeVisualization<
-  U extends TreeValue,
-  T extends Tree<U>,
->({
+export function GetTreeVisualization<U extends TreeValue, T extends Tree<U>>({
   tree,
   rotate = 0,
   labelBranches = false,
@@ -464,7 +436,12 @@ export default function TreeVisualization<
   highlightPaths = [],
   highlightNodes = [],
   hideNullBranches = true,
-}: Props<U, T>) {
+}: Props<U, T>): [
+  visTree: VisTree<U>,
+  jsx: JSX.Element[],
+  mafsTransform: vec.Matrix,
+  viewBounds: TreeBounds,
+] {
   /**
    * Takes a single node and gets the properly-placed Mafs representation of it.
    *
@@ -616,6 +593,50 @@ export default function TreeVisualization<
   let boundVec: vec.Vector2 = [x_size, -y_size];
   boundVec = vec.rotate(boundVec, radians);
 
+  const viewBounds = new TreeBounds(
+    Math.min(boundVec[0], 0),
+    Math.max(boundVec[0], 0),
+    Math.min(boundVec[1], 0),
+    Math.max(boundVec[1], 0),
+  );
+
+  return [visTree, jsxNodes, transform, viewBounds];
+}
+
+/**
+ * Visualizes anything implementing a Tree structure, using the
+ * Reingold-Tilford algorithm for determining node positions.
+ *
+ * See Rachel Lim's wonderful article for a basic understanding of the implementation:
+ * https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/
+ *
+ * However, that article does have some mistakes, and so this implementation attempts
+ * to improve upon those. Especially in the manner of centering and shifting subtrees.
+ *
+ * Please note that if `node.value.print()` returns `null`, the node and all of it's
+ * children will not be rendered, but positions in the tree will act as if it was.
+ * This can be useful in constructing strict n-ary trees with nodal positioning
+ * (see `lib/structures/bst.ts`).
+ *
+ * @param tree Any class implementing Tree.
+ * @param rotate Rotates the tree around the origin (top-left corner), given in degrees.
+ * @param labelBranches Toggles if branches are labeled with a number,
+ *        0 at the leftmost branch and counting up.
+ * @param highlightLeaves Automatically highlights all tree leaves.
+ * @param highlightSubtrees Highlights the entire subtree of a node given by an indexed path.
+ * @param highlightPaths Highlights every node and branch up to the final node in an indexed path.
+ * @param highlightNodes Highlights a node given by an indexed path.
+ * @param hideNullBranches Hides the branches to "nowhere" going to null nodes.
+ */
+export default function TreeVisualization<
+  U extends TreeValue,
+  T extends Tree<U>,
+>(props: Props<U, T>) {
+  // We abstract this out into it's own function so that we aren't
+  // 100% tied to using the mafs container returned by this function.
+  const [_, jsx, mafsTransform, viewBounds] = GetTreeVisualization(props);
+  // ^ also, should we memoize this? might be hard with the nested references
+
   // TODO: Currently, mobile styling (i.e. rotating) is expected
   //  to be done outside of the component. This is inconsistent
   //  with other components, but I'd like to maintain rotations
@@ -627,29 +648,16 @@ export default function TreeVisualization<
       <Mafs
         pan={false}
         viewBox={{
-          x: [Math.min(boundVec[0], 0), Math.max(boundVec[0], 0)],
-          y: [Math.min(boundVec[1], 0), Math.max(boundVec[1], 0)],
+          x: [viewBounds.x.min, viewBounds.x.max],
+          y: [viewBounds.y.min, viewBounds.y.max],
         }}
       >
-        {/* <Vector tip={boundVec} weight={5}></Vector> */}
-        {/* <Coordinates.Cartesian /> */}
-        <Transform matrix={transform}>
-          {jsxNodes}
-          {/* <Polygon
-            points={[
-              [bounds.x.min, bounds.y.min],
-              [bounds.x.min, bounds.y.max],
-              [bounds.x.max, bounds.y.max],
-              [bounds.x.max, bounds.y.min],
-            ]}
-          ></Polygon> */}
-        </Transform>
+        <Transform matrix={mafsTransform}>{jsx}</Transform>
       </Mafs>
     </Container>
   );
 }
 
 const Container = styled.div`
-  /* border: 1px solid ${COLORS.text}; */
   pointer-events: none;
 `;

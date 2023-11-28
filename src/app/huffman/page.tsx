@@ -41,7 +41,6 @@ export default function HuffmanPage() {
   }
 
   useEffect(() => {
-    console.log("yea");
     updateText(defaultText);
   }, []);
 

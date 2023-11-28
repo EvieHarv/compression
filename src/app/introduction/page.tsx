@@ -32,7 +32,6 @@ export default function IntroductionPage() {
       .map((char) => new BoxBreakdownBox(char, StringToASCII(char)));
 
   useEffect(() => {
-    console.log("yea");
     updateText(defaultText);
   }, []);
 

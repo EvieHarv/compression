@@ -30,3 +30,32 @@ export const ILCode = styled.code`
   border: 1px solid ${COLORS.text};
   /* border-radius: 1px; */
 `;
+
+export const TWrap = styled.div`
+  width: 100%;
+  display: grid;
+  place-content: center;
+
+  margin: ${SPACINGS.padding} 0px;
+`;
+
+export const STable = styled.table`
+  border: 1px solid ${COLORS.text};
+  border-collapse: collapse;
+
+  text-align: center;
+`;
+
+export const Th = styled.th`
+  border: 1px solid ${COLORS.text};
+  padding: ${SPACINGS_INT.padding / 2}px;
+`;
+
+export const Td = styled.td`
+  border: 1px solid ${COLORS.text};
+  padding: ${SPACINGS_INT.padding / 2}px;
+`;
+
+export const TextCenter = styled.div`
+  text-align: center;
+`;

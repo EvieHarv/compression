@@ -51,7 +51,7 @@ export class HuffmanTree extends Tree<Huffman> {
   // Caches codes.
   codes: codeMap = {};
 
-  private buildFrequencyMap(input: string): frequencyMap {
+  static buildFrequencyMap(input: string): frequencyMap {
     const map: frequencyMap = {};
     for (const char of input) {
       // Add or increment value, null coalescing
@@ -68,7 +68,7 @@ export class HuffmanTree extends Tree<Huffman> {
    */
   buildFromString(input: string): string {
     // Get the initial frequencies of the array.
-    const freqMap = this.buildFrequencyMap(input);
+    const freqMap = HuffmanTree.buildFrequencyMap(input);
 
     // We're just going to use a simple array for this priority queue.
     // A more complex example with a proper queue that implements indexed

@@ -13,7 +13,10 @@ export default function StandardPageWrapper({ children }: TextBoxProps) {
       <HeaderWrapper>
         <Header />
       </HeaderWrapper>
-      <ContentWrapper>{children}</ContentWrapper>
+      <ContentWrapper>
+        {children}
+        <BottomSpacer />
+      </ContentWrapper>
     </Layout>
   );
 }
@@ -43,4 +46,8 @@ const ContentWrapper = styled.div`
   grid-area: content;
 
   overflow-wrap: anywhere;
+`;
+
+const BottomSpacer = styled.div`
+  height: 100px;
 `;

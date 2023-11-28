@@ -3,17 +3,27 @@
 import Aside from "@/components/Aside";
 import QuoteBox from "@/components/QuoteBox";
 import StandardPageWrapper from "@/components/StandardPageWrapper";
-import { Heading, ILCode, Par, StyledLink } from "@/components/StyledSmalls";
+import {
+  Heading,
+  ILCode,
+  Par,
+  STable,
+  StyledLink,
+  TWrap,
+  Td,
+  TextCenter,
+  Th,
+} from "@/components/StyledSmalls";
 import BoxBreakdown, { BoxBreakdownBox } from "@/components/mafs/BoxBreakdown";
-import { COLORS, SPACINGS, SPACINGS_INT } from "@/lib/constants";
 import { StringToASCII } from "@/lib/structures/ascii";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 
 export default function IntroductionPage() {
   const defaultText = "aaAH! computers!";
   const [text, updateText] = useState<string | null>(null);
 
+  // It would be more efficient to wrap all of this into an effect or memo,
+  // but it's so low impact I'll ignore that.
   let asciiBoxes: BoxBreakdownBox[] = [];
 
   if (text)
@@ -189,32 +199,3 @@ export default function IntroductionPage() {
     </StandardPageWrapper>
   );
 }
-
-const TWrap = styled.div`
-  width: 100%;
-  display: grid;
-  place-content: center;
-
-  margin: ${SPACINGS.padding};
-`;
-
-const STable = styled.table`
-  border: 1px solid ${COLORS.text};
-  border-collapse: collapse;
-
-  text-align: center;
-`;
-
-const Th = styled.th`
-  border: 1px solid ${COLORS.text};
-  padding: ${SPACINGS_INT.padding / 2}px;
-`;
-
-const Td = styled.td`
-  border: 1px solid ${COLORS.text};
-  padding: ${SPACINGS_INT.padding / 2}px;
-`;
-
-const TextCenter = styled.div`
-  text-align: center;
-`;

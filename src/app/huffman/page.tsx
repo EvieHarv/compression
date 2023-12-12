@@ -225,10 +225,10 @@ export default function HuffmanPage() {
         We'll squish these together and create a structure like this, showing
         the letter and how often it shows up:
       </Par>
-      {/* <TreeVisualization
+      <TreeVisualization
         tree={firstShotTree}
         rotate={screenWidth <= BREAKPOINTS.phone ? 90 : 0}
-      /> */}
+      />
       <Par>
         What we're doing here is essentially "combining" these letters into a
         single place. If we look at the newly created grey node, we'll see that

@@ -38,6 +38,11 @@ export default function Home() {
       <Par>
         <StyledLink href="/attributions">attributions</StyledLink>
       </Par>
+      <Par>
+        <StyledLink href="https://github.com/EvieHarv/compression">
+          github for this site
+        </StyledLink>
+      </Par>
     </StandardPageWrapper>
   );
 }

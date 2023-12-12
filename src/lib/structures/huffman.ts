@@ -67,6 +67,12 @@ export class HuffmanTree extends Tree<Huffman> {
    * @returns The binary represented encoding of the input string.
    */
   buildFromString(input: string): string {
+    if (input.length === 1) {
+      this.codes = {};
+      this.codes[input[0]] = "0";
+      return "0";
+    }
+
     // Get the initial frequencies of the array.
     const freqMap = HuffmanTree.buildFrequencyMap(input);
 

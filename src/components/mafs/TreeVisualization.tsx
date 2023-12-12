@@ -737,7 +737,9 @@ export function ForestVisualization<U extends TreeValue, T extends Tree<U>>({
         }}
       >
         {finalNodes.map((node) => (
-          <Transform matrix={transform}>{node.el}</Transform>
+          <Transform matrix={transform} key={transform.toString()}>
+            {node.el}
+          </Transform>
         ))}
         <Text x={0} y={0}>
           hi

@@ -64,7 +64,7 @@ export class HuffmanTree extends Tree<Huffman> {
    * Optimizes the tree to the specific input.
    *
    * @param input String to optimize the tree to.
-   * @returns The encoding of the input string.
+   * @returns The binary represented encoding of the input string.
    */
   buildFromString(input: string): string {
     // Get the initial frequencies of the array.
@@ -73,7 +73,7 @@ export class HuffmanTree extends Tree<Huffman> {
     // We're just going to use a simple array for this priority queue.
     // A more complex example with a proper queue that implements indexed
     // inserts might be in order later, but for testing and initial purposes,
-    // this should be more than servicable.
+    // this should be more than serviceable.
     // ---
     // Throw all the initial map values into the queue, Node-ifying them along the way.
     const queue: TreeNode<Huffman>[] = Object.keys(freqMap).map(

@@ -387,6 +387,7 @@ class VisTree<T extends TreeValue> extends Tree<VisValue<T>> {
     // We apply vertical spacing here instead of when we originally assign it
     // because it's more nice to have simple y-levels for the math along the way.
     node.value.y *= VERTICAL_SPACING;
+    node.value.mod = 0;
   }
 
   /**
@@ -631,10 +632,28 @@ export function GetTreeVisualization<U extends TreeValue, T extends Tree<U>>({
 export default function TreeVisualization<
   U extends TreeValue,
   T extends Tree<U>,
->(props: Props<U, T>) {
+>({
+  tree,
+  rotate = 0,
+  labelBranches = false,
+  highlightLeaves = true,
+  highlightSubtrees = [],
+  highlightPaths = [],
+  highlightNodes = [],
+  hideNullBranches = true,
+}: Props<U, T>) {
   // We abstract this out into it's own function so that we aren't
   // 100% tied to using the mafs container returned by this function.
-  const [_, jsx, mafsTransform, viewBounds] = GetTreeVisualization(props);
+  const [_, jsx, mafsTransform, viewBounds] = GetTreeVisualization({
+    tree,
+    rotate,
+    labelBranches,
+    highlightLeaves,
+    highlightSubtrees,
+    highlightPaths,
+    highlightNodes,
+    hideNullBranches,
+  });
   // ^ also, should we memoize this? might be hard with the nested references
 
   // TODO: Currently, mobile styling (i.e. rotating) is expected
@@ -653,6 +672,76 @@ export default function TreeVisualization<
         }}
       >
         <Transform matrix={mafsTransform}>{jsx}</Transform>
+      </Mafs>
+    </Container>
+  );
+}
+
+interface ForestProps<U extends TreeValue, T extends Tree<U>> {
+  trees: T[];
+  rotate?: number;
+  labelBranches?: boolean;
+  highlightLeaves?: boolean;
+  highlightSubtrees?: Array<number[]>;
+  highlightPaths?: Array<number[]>;
+  highlightNodes?: Array<number[]>;
+  hideNullBranches?: boolean;
+}
+
+/**
+ * WIP
+ */
+export function ForestVisualization<U extends TreeValue, T extends Tree<U>>({
+  trees,
+  rotate = 0,
+  labelBranches = false,
+  highlightLeaves = true,
+  highlightSubtrees = [],
+  highlightPaths = [],
+  highlightNodes = [],
+  hideNullBranches = true,
+}: ForestProps<U, T>) {
+  trees.sort((a, b) => a.size() - b.size());
+  const finalNodes: Array<{ el: JSX.Element[]; trf: vec.Matrix }> = [];
+  let finalBounds = new TreeBounds(0, 0, 0, 0);
+
+  // We only need one
+  let transform: vec.Matrix = vec.matrixBuilder().get();
+
+  trees.forEach((tree) => {
+    const [_, jsx, mafsTransform, viewBounds] = GetTreeVisualization({
+      tree,
+      rotate,
+      labelBranches,
+      highlightLeaves,
+      highlightSubtrees,
+      highlightPaths,
+      highlightNodes,
+      hideNullBranches,
+    });
+
+    let individualTransform = vec
+      .matrixBuilder()
+      .translate(/* last one */ 0, 0);
+
+    finalNodes.push({ el: jsx, trf: individualTransform });
+  });
+
+  return (
+    <Container>
+      <Mafs
+        pan={false}
+        viewBox={{
+          x: [finalBounds.x.min, finalBounds.x.max],
+          y: [finalBounds.y.min, finalBounds.y.max],
+        }}
+      >
+        {finalNodes.map((node) => (
+          <Transform matrix={transform}>{node.el}</Transform>
+        ))}
+        <Text x={0} y={0}>
+          hi
+        </Text>
       </Mafs>
     </Container>
   );

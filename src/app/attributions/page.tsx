@@ -8,10 +8,10 @@ export default function AttributionsPage() {
     <StandardPageWrapper>
       <Heading>Attributions</Heading>
       <hr />
-      <Par>- nextjs</Par>
-      <Par>- mafs</Par>
-      <Par>- react-tooltip</Par>
-      <Par>- fabiensanglard.net i absolutely stole the style</Par>
+      <Par>- built in nextjs</Par>
+      <Par>- uses the wonderful library mafs</Par>
+      <Par>- as well as react-tooltip</Par>
+      <Par>- and regards to fabiensanglard.net for style "inspiration"</Par>
     </StandardPageWrapper>
   );
 }
